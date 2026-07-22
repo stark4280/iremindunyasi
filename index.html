@@ -1,576 +1,2554 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Western Birthday 🤠</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
-<style>
-* { box-sizing: border-box; }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffd5e9">
+  <title>İrem'in Dünyası</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #5d365d;
+      --deep-pink: #ef5f9d;
+      --pink: #ff9fc9;
+      --soft-pink: #ffe2f0;
+      --lilac: #c6a4ef;
+      --mint: #b9e6c8;
+      --white: #fffaff;
+    }
 
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: 'Cinzel', serif;
-  overflow: hidden;
-  background: black;
-  color: #f5e6c8;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.7);
-}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-#bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background-color: #000;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: brightness(0.75) contrast(1.05);
-}
+    html,
+    body {
+      width: 100%;
+      width: 100vw;
+      height: 100%;
+      height: 100dvh;
+      margin: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: #ffd5e9;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-text-size-adjust: 100%;
+    }
 
-#bgA, #bgB {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  transition: opacity 0.6s ease;
-  overflow: hidden;
-}
-#bgB { opacity: 0; }
+    body {
+      position: fixed;
+      inset: 0;
+      font-family: ui-rounded, "Arial Rounded MT Bold", "Nunito", system-ui, sans-serif;
+      color: var(--ink);
+    }
 
-/* blur dolgu katmanı */
-#bgA::before, #bgB::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  background-image: inherit;
-  background-size: cover;
-  background-position: center;
-  filter: blur(18px) brightness(0.5) saturate(0.8);
-  z-index: 0;
-}
+    button,
+    canvas {
+      touch-action: none;
+    }
 
-/* asıl fotoğraf - contain, kesme yok */
-#bgA::after, #bgB::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: inherit;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: brightness(0.88) contrast(1.08) saturate(1.1);
-  z-index: 1;
-}
+    #game-app {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+      background: #ffd5e9;
+    }
 
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.88));
-  z-index: 1;
-}
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-.hud {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  display: flex;
-  justify-content: center;
-  z-index: 3;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+    #hud {
+      position: fixed;
+      z-index: 3;
+      top: calc(env(safe-area-inset-top, 0px) + 12px);
+      left: calc(env(safe-area-inset-left, 0px) + 12px);
+      pointer-events: none;
+    }
 
-.hud-box {
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,215,0,0.25);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-}
+    #adventureHud {
+      position: fixed;
+      z-index: 3;
+      top: calc(env(safe-area-inset-top, 0px) + 12px);
+      right: calc(env(safe-area-inset-right, 0px) + 12px);
+      width: min(164px, 43vw);
+      padding: 9px 10px 10px;
+      border: 3px solid rgba(255, 255, 255, 0.94);
+      border-radius: 14px;
+      background: rgba(255, 242, 249, 0.9);
+      box-shadow: 0 4px 0 rgba(177, 95, 151, 0.18), 0 8px 18px rgba(151, 76, 130, 0.13);
+      color: #794878;
+      pointer-events: none;
+    }
 
-.hud-box.rutbe {
-  font-size: clamp(14px, 2vw, 26px);
-  padding: clamp(8px, 1.2vw, 12px) clamp(12px, 1.8vw, 22px);
-  border-color: rgba(255,215,0,0.5);
-  color: #ffd27d;
-  letter-spacing: 1px;
-}
+    .stage-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: 0.06em;
+    }
 
-.center {
-  position: relative;
-  z-index: 3;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0 20px;
-}
+    #zoneName {
+      overflow: hidden;
+      color: #a25d91;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-h1 {
-  font-size: clamp(28px, 6vw, 52px);
-  margin: 0;
-}
+    #stageValue {
+      flex: 0 0 auto;
+      color: #7151a2;
+    }
 
-#age {
-  font-size: clamp(72px, 18vw, 120px);
-  margin: 10px 0;
-  line-height: 1;
-}
+    .progress-label,
+    .mission-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 8px;
+      color: #9a5d8d;
+      font-size: 9px;
+      font-weight: 1000;
+      letter-spacing: 0.055em;
+    }
 
-#text {
-  opacity: 0.9;
-  min-height: 50px;
-  font-size: clamp(14px, 2.5vw, 19px);
-  max-width: 560px;
-  line-height: 1.5;
-}
+    .progress-track,
+    .energy-track {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 9px;
+      margin-top: 4px;
+      border: 2px solid #f6d3e7;
+      border-radius: 999px;
+      background: #ead8ea;
+    }
 
-button {
-  margin-top: 20px;
-  padding: 14px 30px;
-  font-size: clamp(15px, 2.5vw, 18px);
-  border-radius: 10px;
-  border: 1px solid rgba(255,215,0,0.4);
-  background: rgba(0,0,0,0.5);
-  color: #ffd27d;
-  cursor: pointer;
-  transition: 0.2s;
-  font-family: 'Cinzel', serif;
-}
+    #stageProgressFill,
+    #energyFill {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f988b9, #c89df2, #8ce0cf);
+      box-shadow: 0 0 8px rgba(255, 110, 180, 0.64);
+      transition: width 150ms linear;
+    }
 
-button:hover {
-  transform: scale(1.05);
-  background: rgba(255,215,0,0.2);
-}
+    .mission-line {
+      margin-top: 8px;
+      color: #7d649d;
+    }
 
-.bullets {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
+    .upgrade-status {
+      margin-top: 8px;
+      overflow: hidden;
+      color: #a46679;
+      font-size: 9px;
+      font-weight: 1000;
+      letter-spacing: 0.035em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-.bullet {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #ffd27d;
-}
+    .score-card {
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 116px;
+      padding: 9px 13px 8px;
+      border: 3px solid rgba(255, 255, 255, 0.96);
+      border-radius: 14px;
+      background: rgba(255, 232, 244, 0.9);
+      box-shadow: 0 4px 0 rgba(177, 95, 151, 0.22), 0 8px 18px rgba(151, 76, 130, 0.15);
+      line-height: 1;
+    }
 
-.bullet.active {
-  background: #ffd27d;
-  box-shadow: 0 0 5px #ffd27d;
-}
+    .score-icon {
+      font-size: 21px;
+      filter: drop-shadow(0 2px 0 rgba(185, 84, 131, 0.23));
+    }
 
-#reloadText {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  font-size: clamp(16px, 3vw, 22px);
-  font-weight: bold;
-  color: #ffd27d;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-  pointer-events: none;
-  white-space: nowrap;
-}
+    .score-caption {
+      display: block;
+      margin-bottom: 3px;
+      color: #a65b91;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.11em;
+    }
 
-@keyframes shake {
-  0%   { transform: translate(0); }
-  20%  { transform: translate(4px, -4px); }
-  40%  { transform: translate(-4px, 4px); }
-  60%  { transform: translate(4px, 4px); }
-  80%  { transform: translate(-4px, -4px); }
-  100% { transform: translate(0); }
-}
+    #scoreValue {
+      display: block;
+      color: #6c3f6d;
+      font-size: 22px;
+      font-weight: 1000;
+      letter-spacing: 0.02em;
+    }
 
-#final {
-  position: fixed;
-  inset: 0;
-  display: none;
-  background: rgba(0,0,0,0.55);
-  z-index: 10;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-  padding: 20px;
-}
+    #helpButton {
+      position: fixed;
+      z-index: 4;
+      right: calc(env(safe-area-inset-right, 0px) + 14px);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+      width: min(154px, 41vw);
+      min-height: 72px;
+      padding: 11px 11px 10px;
+      border: 3px solid #fff7fc;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffabd2 0%, #f35f9e 100%);
+      box-shadow: 0 5px 0 #bf4a7d, 0 0 0 4px rgba(255, 153, 202, 0.35), 0 0 25px rgba(255, 79, 156, 0.82);
+      color: #fffafd;
+      font: inherit;
+      font-weight: 1000;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      text-align: center;
+      text-shadow: 0 2px 0 rgba(151, 54, 103, 0.45);
+      cursor: pointer;
+      transform: translateY(0) scale(1);
+      animation: button-glow 1.55s ease-in-out infinite alternate;
+      transition: filter 120ms ease, transform 120ms ease, box-shadow 120ms ease, background 160ms ease;
+      -webkit-appearance: none;
+      appearance: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
 
-#final h1 {
-  font-size: clamp(28px, 6vw, 52px);
-}
+    #helpButton:active:not(:disabled) {
+      box-shadow: 0 2px 0 #bf4a7d, 0 0 0 4px rgba(255, 153, 202, 0.25), 0 0 18px rgba(255, 79, 156, 0.75);
+      transform: translateY(3px) scale(0.98);
+    }
 
-#final p {
-  font-size: clamp(16px, 3vw, 24px);
-  margin-top: 10px;
-}
+    #helpButton.is-active {
+      background: linear-gradient(180deg, #ef8eff 0%, #b779ef 46%, #ff78b7 100%);
+      box-shadow: 0 5px 0 #8254b4, 0 0 0 4px rgba(255, 238, 253, 0.58), 0 0 30px rgba(211, 128, 255, 0.95);
+      animation-duration: 0.7s;
+    }
 
-/* SES PANELİ */
-#soundPanel {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,215,0,0.25);
-  border-radius: 10px;
-  padding: 8px 12px;
-}
+    #helpButton.is-cooling,
+    #helpButton:disabled:not(.is-active) {
+      background: linear-gradient(180deg, #d9bed7 0%, #ae8fac 100%);
+      box-shadow: 0 4px 0 #806b80, 0 0 0 3px rgba(255, 255, 255, 0.44);
+      color: #fff8ff;
+      cursor: default;
+      animation: none;
+      filter: saturate(0.72);
+    }
 
-#muteBtn {
-  background: none;
-  border: none;
-  color: #ffd27d;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  text-shadow: none;
-}
+    #helpButton.is-active:disabled {
+      cursor: default;
+      filter: brightness(1.08) saturate(1.08);
+    }
 
-#musicBtn {
-  background: none;
-  border: none;
-  color: #ffd27d;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  text-shadow: none;
-}
-#musicBtn:hover { transform: scale(1.2); background: none; }
+    #powerButton {
+      position: fixed;
+      z-index: 4;
+      left: calc(env(safe-area-inset-left, 0px) + 14px);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+      width: min(148px, 39vw);
+      min-height: 68px;
+      padding: 9px 10px 8px;
+      border: 3px solid #fffdf4;
+      border-radius: 17px;
+      background: linear-gradient(180deg, #ffe996 0%, #f6ae61 100%);
+      box-shadow: 0 5px 0 #bd7c51, 0 0 0 4px rgba(255, 232, 145, 0.32), 0 0 20px rgba(255, 206, 99, 0.55);
+      color: #744c59;
+      font: inherit;
+      font-weight: 1000;
+      line-height: 1.02;
+      text-align: center;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.46);
+      cursor: pointer;
+      transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+      -webkit-appearance: none;
+      appearance: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
 
-#volSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 90px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255,215,0,0.3);
-  outline: none;
-  cursor: pointer;
-}
+    #powerButton.is-ready {
+      animation: power-glow 0.85s ease-in-out infinite alternate;
+    }
 
-#volSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #ffd27d;
-  cursor: pointer;
-  box-shadow: 0 0 4px rgba(255,210,125,0.6);
-}
+    #powerButton.is-active {
+      background: linear-gradient(180deg, #fff2a9 0%, #ff9f70 54%, #f579a7 100%);
+      box-shadow: 0 5px 0 #ba6077, 0 0 0 4px rgba(255, 246, 191, 0.66), 0 0 28px rgba(255, 179, 91, 0.95);
+      color: #7d3d5b;
+      animation: power-glow 0.48s ease-in-out infinite alternate;
+      filter: saturate(1.16);
+    }
 
-#volSlider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #ffd27d;
-  cursor: pointer;
-  border: none;
-}
-.confetti-piece {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  top: -10px;
-  z-index: 11;
-  border-radius: 2px;
-  animation: confettiFall linear forwards;
-}
+    #powerButton:active:not(:disabled) {
+      transform: translateY(3px) scale(0.98);
+      box-shadow: 0 2px 0 #bd7c51, 0 0 0 3px rgba(255, 232, 145, 0.25);
+    }
 
-@keyframes confettiFall {
-  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-}
-</style>
+    #powerButton:disabled:not(.is-active) {
+      background: linear-gradient(180deg, #e3d8cf 0%, #b4a69e 100%);
+      box-shadow: 0 4px 0 #82766f, 0 0 0 3px rgba(255, 255, 255, 0.42);
+      color: #fffaff;
+      cursor: default;
+      filter: saturate(0.65);
+      animation: none;
+    }
+
+    #powerButton.is-active:disabled {
+      cursor: default;
+    }
+
+    .power-main {
+      display: block;
+      font-size: clamp(12px, 3.4vw, 14px);
+    }
+
+    #powerStatus {
+      display: block;
+      min-height: 13px;
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: 0.04em;
+    }
+
+    .help-main {
+      display: block;
+      font-size: clamp(13px, 3.6vw, 15px);
+    }
+
+    #helpCountdown {
+      display: block;
+      min-height: 14px;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 1000;
+      letter-spacing: 0.04em;
+    }
+
+    #restartOverlay {
+      position: fixed;
+      z-index: 8;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 22px) 24px calc(env(safe-area-inset-bottom, 0px) + 22px);
+      background: rgba(89, 42, 86, 0.39);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 110ms ease;
+    }
+
+    #restartOverlay.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #upgradeOverlay {
+      position: fixed;
+      z-index: 7;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 18px) 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+      background: rgba(82, 45, 98, 0.36);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms ease;
+    }
+
+    #upgradeOverlay.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .upgrade-card {
+      width: min(366px, 94vw);
+      padding: 20px 16px 16px;
+      border: 4px solid #fffaff;
+      border-radius: 23px;
+      background: linear-gradient(180deg, #fff3fb 0%, #efd8f5 100%);
+      box-shadow: 0 8px 0 #aa70a3, 0 24px 48px rgba(65, 31, 77, 0.27);
+      text-align: center;
+    }
+
+    .upgrade-kicker {
+      margin-bottom: 4px;
+      color: #d06c9d;
+      font-size: 11px;
+      font-weight: 1000;
+      letter-spacing: 0.12em;
+    }
+
+    .upgrade-card h2 {
+      margin: 0;
+      color: #734773;
+      font-size: 24px;
+      line-height: 1.08;
+    }
+
+    .upgrade-card p {
+      margin: 8px 0 15px;
+      color: #9a5e91;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .upgrade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .upgrade-choice {
+      min-height: 124px;
+      padding: 10px 5px 8px;
+      border: 3px solid #fffaff;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #ffc5e0 0%, #e992c0 100%);
+      box-shadow: 0 4px 0 #b96695;
+      color: #77486f;
+      font: inherit;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .upgrade-choice:nth-child(2) {
+      background: linear-gradient(180deg, #d8c0ff 0%, #b994e6 100%);
+      box-shadow: 0 4px 0 #846db4;
+    }
+
+    .upgrade-choice:nth-child(3) {
+      background: linear-gradient(180deg, #c6efd8 0%, #94ceaf 100%);
+      box-shadow: 0 4px 0 #679f82;
+    }
+
+    .upgrade-choice:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(83, 56, 85, 0.5);
+    }
+
+    .upgrade-icon {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .upgrade-title {
+      display: block;
+      font-size: 12px;
+      font-weight: 1000;
+      line-height: 1.02;
+    }
+
+    .upgrade-description {
+      display: block;
+      margin-top: 5px;
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .restart-card {
+      width: min(320px, 92vw);
+      padding: 22px 20px 19px;
+      border: 4px solid #fffaff;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffe8f4 0%, #f8cae4 100%);
+      box-shadow: 0 8px 0 #ba719d, 0 22px 50px rgba(70, 28, 65, 0.28);
+      text-align: center;
+    }
+
+    .restart-cat {
+      margin-bottom: 4px;
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .restart-card h1 {
+      margin: 0;
+      color: #774776;
+      font-size: 25px;
+      line-height: 1.08;
+    }
+
+    .restart-card p {
+      margin: 10px 0 17px;
+      color: #9c5c91;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    #restartButton {
+      width: 100%;
+      min-height: 56px;
+      border: 3px solid #fffaff;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #ff9ac7 0%, #eb5d9a 100%);
+      box-shadow: 0 5px 0 #b74375;
+      color: #fffaff;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 1000;
+      text-shadow: 0 2px 0 rgba(130, 41, 85, 0.42);
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    #restartButton:active {
+      box-shadow: 0 2px 0 #b74375;
+      transform: translateY(3px);
+    }
+
+    @keyframes button-glow {
+      from {
+        filter: brightness(1);
+      }
+      to {
+        filter: brightness(1.1) saturate(1.13);
+      }
+    }
+
+    @keyframes power-glow {
+      from {
+        filter: brightness(1) saturate(1);
+      }
+      to {
+        filter: brightness(1.13) saturate(1.2);
+      }
+    }
+
+    @media (max-height: 560px) {
+      #helpButton {
+        min-height: 60px;
+        padding: 8px;
+      }
+
+      .help-main {
+        font-size: 12px;
+      }
+
+      #hud {
+        top: calc(env(safe-area-inset-top, 0px) + 7px);
+        left: calc(env(safe-area-inset-left, 0px) + 8px);
+      }
+
+      .score-card {
+        padding: 6px 9px;
+      }
+
+      #adventureHud {
+        top: calc(env(safe-area-inset-top, 0px) + 7px);
+        right: calc(env(safe-area-inset-right, 0px) + 8px);
+        padding: 6px 7px;
+      }
+
+      #powerButton {
+        min-height: 57px;
+        padding: 7px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <main id="game-app" aria-label="İrem'in Dünyası oyunu">
+    <canvas id="gameCanvas" aria-label="İrem'i sağa sola sürükleyerek düşen bloklardan kaçır"></canvas>
 
-<div id="bgA"></div>
-<div id="bgB"></div>
-<div class="overlay"></div>
+    <div id="hud" aria-live="polite" aria-atomic="true">
+      <div class="score-card">
+        <span class="score-icon" aria-hidden="true">♥</span>
+        <span>
+          <span class="score-caption">SKOR</span>
+          <span id="scoreValue">0</span>
+        </span>
+      </div>
+    </div>
 
-<div class="hud">
-  <div class="hud-box rutbe">RÜTBE: <span id="hudStatus">BEBEK</span></div>
-</div>
+    <div id="adventureHud" aria-live="polite" aria-atomic="true">
+      <div class="stage-line">
+        <span id="zoneName">Şeker Ormanı</span>
+        <span id="stageValue">BÖLÜM 1</span>
+      </div>
+      <div class="progress-label">
+        <span>DÜNYA YOLU</span>
+        <span id="stageProgressText">0%</span>
+      </div>
+      <div class="progress-track"><span id="stageProgressFill"></span></div>
+      <div class="mission-line">
+        <span id="missionLabel">KRİSTAL MİSYONU</span>
+        <span id="missionValue">0 / 3</span>
+      </div>
+      <div class="progress-label">
+        <span>PATİ ENERJİSİ</span>
+        <span id="energyValue">0%</span>
+      </div>
+      <div class="energy-track"><span id="energyFill"></span></div>
+      <div id="upgradeStatus" class="upgrade-status">GÜÇLER: Keşfediliyor</div>
+    </div>
 
-<div class="center">
-  <h1>İYİ Kİ DOĞDUN 🤠</h1>
-  <div id="age">0</div>
-  <div id="text">Hazır mısın kovboy?</div>
-  <div class="bullets" id="bulletsUI"></div>
-  <button onclick="shoot()">+1 YAŞ ATLA 🔫</button>
-</div>
+    <button id="helpButton" type="button" aria-label="Sinem'den Yardım Al">
+      <span id="helpMain" class="help-main">Sinem'den<br>Yardım Al!</span>
+      <span id="helpCountdown" aria-hidden="true">Hazır! ♥</span>
+    </button>
 
-<div id="reloadText">ŞARJÖR DOLDURULUYOR...</div>
+    <button id="powerButton" type="button" aria-label="Pati Patlaması için enerji topla" disabled>
+      <span id="powerMain" class="power-main">Pati Patlaması</span>
+      <span id="powerStatus" aria-hidden="true">Enerji 0%</span>
+    </button>
 
-<audio id="gun"><source src="silah.mp3"></audio>
-<audio id="reload"><source src="reload.mp3"></audio>
-<audio id="music" loop><source src="muzik.mp3"></audio>
+    <section id="upgradeOverlay" role="dialog" aria-modal="true" aria-labelledby="upgradeTitle">
+      <div class="upgrade-card">
+        <div class="upgrade-kicker">BÖLÜM TAMAMLANDI</div>
+        <h2 id="upgradeTitle">Pati Sandığı Açıldı!</h2>
+        <p id="upgradeText">Yeni bölüm için bir sihir seç.</p>
+        <div class="upgrade-grid">
+          <button class="upgrade-choice" type="button" data-upgrade="magnet">
+            <span class="upgrade-icon" aria-hidden="true">🧲</span>
+            <span class="upgrade-title">Kalp Mıknatısı</span>
+            <span class="upgrade-description">Ekranın büyük kısmındaki ödüller hızla İrem'e uçar.</span>
+          </button>
+          <button class="upgrade-choice" type="button" data-upgrade="fortune">
+            <span class="upgrade-icon" aria-hidden="true">💎</span>
+            <span class="upgrade-title">Kristal Şansı</span>
+            <span class="upgrade-description">Nadir kristaller çok daha sık düşer.</span>
+          </button>
+          <button class="upgrade-choice" type="button" data-upgrade="grace">
+            <span class="upgrade-icon" aria-hidden="true">🫧</span>
+            <span class="upgrade-title">Yumuşak İniş</span>
+            <span class="upgrade-description">İki çarpışmayı pembe kalkanla atlat.</span>
+          </button>
+        </div>
+      </div>
+    </section>
 
-<div id="soundPanel">
-  <button id="muteBtn" onclick="toggleMute()">🔊</button>
-  <input id="volSlider" type="range" min="0" max="100" value="30" oninput="setVolume(this.value)">
-  <button id="musicBtn" onclick="toggleMusic()">🎵</button>
-</div>
+    <section id="restartOverlay" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+      <div class="restart-card">
+        <div class="restart-cat" aria-hidden="true">🐾</div>
+        <h1 id="gameOverTitle">Minik Bir Çarpışma!</h1>
+        <p>Skorun: <span id="finalScore">0</span></p>
+        <button id="restartButton" type="button">Yeniden Başla</button>
+      </div>
+    </section>
+  </main>
 
-<!-- KONFETI -->
-  <h1>🤠 KOVBOY UNLOCKED</h1>
-  <p>İYİ Kİ DOĞDUN EMİRHAN 🤍<br><span style="font-size:0.75em; opacity:0.7;">Kasabanın en tehlikeli kovboyu artık resmen yaşlı.</span></p>
-  <button onclick="location.reload()" style="margin-top:24px;">Kasabaya Dön</button>
-</div>
+  <script>
+    (() => {
+      "use strict";
 
-<script>
-let age = 0;
-let bullets = 6;
-let locked = false;
-let activeBg = "A";
-const target = 25;
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+      const scoreValue = document.getElementById("scoreValue");
+      const zoneName = document.getElementById("zoneName");
+      const stageValue = document.getElementById("stageValue");
+      const stageProgressText = document.getElementById("stageProgressText");
+      const stageProgressFill = document.getElementById("stageProgressFill");
+      const missionLabel = document.getElementById("missionLabel");
+      const missionValue = document.getElementById("missionValue");
+      const energyValue = document.getElementById("energyValue");
+      const energyFill = document.getElementById("energyFill");
+      const upgradeStatus = document.getElementById("upgradeStatus");
+      const helpButton = document.getElementById("helpButton");
+      const helpMain = document.getElementById("helpMain");
+      const helpCountdown = document.getElementById("helpCountdown");
+      const powerButton = document.getElementById("powerButton");
+      const powerMain = document.getElementById("powerMain");
+      const powerStatus = document.getElementById("powerStatus");
+      const upgradeOverlay = document.getElementById("upgradeOverlay");
+      const upgradeText = document.getElementById("upgradeText");
+      const upgradeChoices = Array.from(document.querySelectorAll("[data-upgrade]"));
+      const restartOverlay = document.getElementById("restartOverlay");
+      const restartButton = document.getElementById("restartButton");
+      const finalScore = document.getElementById("finalScore");
 
-// Ses
-let audioCtx = null;
-let sfxVolume = 0.027; // slider 30 = (30/100)^3
-let muted = false;
-let musicMuted = false;
+      const TAU = Math.PI * 2;
+      const MAX_DPR = 2;
+      const MAX_PARTICLES = 150;
+      const MAX_FLOAT_TEXTS = 14;
+      const palette = {
+        ink: "#5d365d",
+        softInk: "#895580",
+        sky: "#ffd8ea",
+        skyLight: "#ffe8f3",
+        cloud: "#fff8fc",
+        lilac: "#c5a6ed",
+        lilacDeep: "#9a70c9",
+        pink: "#ff98c5",
+        pinkDeep: "#e85e9c",
+        pinkPale: "#ffe1f0",
+        mint: "#b9e6c8",
+        mintDeep: "#79b993",
+        butter: "#ffe69b",
+        white: "#fffaff",
+        shadow: "#8f5d88"
+      };
 
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-  return audioCtx;
-}
+      const zones = [
+        {
+          name: "Şeker Ormanı",
+          sky: "#ffd8ea",
+          skyLight: "#ffe8f3",
+          hillTones: ["#d5b7f0", "#c8a5e8", "#e0c4f3", "#bfe6cc"],
+          hillCaps: ["#f0d9ff", "#e7cbf5", "#d8f0db"],
+          ground: "#79b993",
+          grass: "#b9e6c8",
+          grassLight: "#ddf5d9"
+        },
+        {
+          name: "Ay Işığı Blokları",
+          sky: "#d9d0f5",
+          skyLight: "#f2eaff",
+          hillTones: ["#bca8e5", "#9f8bc9", "#d3c4ef", "#c0cde9"],
+          hillCaps: ["#f0e9ff", "#ddcefa", "#e0e7ff"],
+          ground: "#889bc3",
+          grass: "#c2d6e8",
+          grassLight: "#e2eff5"
+        },
+        {
+          name: "Nane Bulutları",
+          sky: "#caeee3",
+          skyLight: "#edfff5",
+          hillTones: ["#a8d8be", "#b6cfe6", "#d2e8c1", "#c6b9ea"],
+          hillCaps: ["#e6f8df", "#e3efff", "#f2e8ff"],
+          ground: "#6db38f",
+          grass: "#b9e6c8",
+          grassLight: "#e4f8d9"
+        },
+        {
+          name: "Pırıltı Vadisi",
+          sky: "#ffe0b8",
+          skyLight: "#fff5d9",
+          hillTones: ["#e6b4cb", "#d5a9e5", "#f0c98c", "#b8d9c5"],
+          hillCaps: ["#ffe8f3", "#f5e5ff", "#fff0c6"],
+          ground: "#a68c73",
+          grass: "#d7c99c",
+          grassLight: "#fff0bd"
+        }
+      ];
 
-// logaritmik ölçek: ortası (50) → 0.125, 30 → ~0.027
-function sliderToVolume(val) {
-  return Math.pow(val / 100, 3);
-}
+      const view = {
+        width: 0,
+        height: 0,
+        dpr: 1
+      };
 
-function setVolume(val) {
-  sfxVolume = sliderToVolume(val);
-  muted = sfxVolume === 0;
-  document.getElementById("muteBtn").textContent = muted ? "🔇" : "🔊";
-}
+      const player = {
+        x: 0,
+        targetX: 0,
+        y: 0,
+        size: 72,
+        bob: 0,
+        tilt: 0
+      };
 
-function toggleMute() {
-  muted = !muted;
-  const slider = document.getElementById("volSlider");
-  if (muted) {
-    slider.value = 0;
-    sfxVolume = 0;
-    document.getElementById("muteBtn").textContent = "🔇";
-  } else {
-    slider.value = 30;
-    sfxVolume = sliderToVolume(30);
-    document.getElementById("muteBtn").textContent = "🔊";
-  }
-}
+      const game = {
+        phase: "intro",
+        elapsed: 0,
+        introTimer: 2,
+        score: 0,
+        scoreFraction: 0,
+        obstacleTimer: 0.55,
+        pickupTimer: 2.6,
+        sinemTimer: 0,
+        cooldownTimer: 0,
+        shakeTimer: 0,
+        shakeDuration: 0,
+        shakePower: 0,
+        combo: 0,
+        comboTimer: 0,
+        stage: 1,
+        stageProgress: 0,
+        stageGoal: 390,
+        stageClearTimer: 0,
+        crystalCount: 0,
+        crystalTarget: 3,
+        missionComplete: false,
+        energy: 0,
+        powerTimer: 0,
+        magnetLevel: 0,
+        fortuneLevel: 0,
+        graceCharges: 0,
+        nearMisses: 0,
+        pointerId: null,
+        hidden: false,
+        lastHelpLabel: "",
+        lastScoreText: "0",
+        lastPowerLabel: "",
+        lastAdventureLabel: ""
+      };
 
-function toggleMusic() {
-  const music = document.getElementById("music");
-  musicMuted = !musicMuted;
-  if (musicMuted) {
-    music.pause();
-    document.getElementById("musicBtn").textContent = "🔕";
-  } else {
-    music.play().catch(() => {});
-    document.getElementById("musicBtn").textContent = "🎵";
-  }
-}
+      const obstacles = [];
+      const pickups = [];
+      const particles = [];
+      const floatTexts = [];
+      const background = {
+        sparkles: [],
+        clouds: [],
+        hills: [],
+        flowers: []
+      };
 
-const photos = [
-  { max: 5,  src: "abim0.jpg"  },
-  { max: 10, src: "abim5.jpg"  },
-  { max: 15, src: "abim10.jpg" },
-  { max: 18, src: "abim15.jpg" },
-  { max: 20, src: "abim18.jpg" },
-  { max: 25, src: "abim20.jpg" },
-  { max: 99, src: "kovboy.webp"}
-];
+      let lastFrameTime = 0;
+      let audioContext = null;
+      let lastRestartPress = -1000;
+      let lastHelpPress = -1000;
+      let lastPowerPress = -1000;
 
-const messages = {
-  0:  "Hazır mısın kovboy? Bu tetik kendiliğinden çekilmez.",
-  1:  "Dünyaya geldi. Masum, temiz, hiçbir şeyden habersiz. Annesi mutlu, babası gururlu. Henüz.",
-  2:  "İki yaşında. Yürümeyi öğrendi, durdurmak artık zor.",
-  3:  "Üç yaşında. Her şeyi kırıyor ama suçu hep başkasında buluyor.",
-  4:  "Dört yaşında. Sorular sorulmaya başlandı. Cevaplar hiç tatmin etmedi.",
-  5:  "İlkokul kapıda. Hayat artık biraz daha gerçek, biraz daha acı.",
-  6:  "Altı yaşında. Öğretmenler henüz umudu kesmedi.",
-  7:  "Yedi yaşında. Arkadaşlar seçildi, yanlış seçimler başladı.",
-  8:  "Sekiz yaşında. Oyun bitmek bilmiyor, ders kitabı tozlanıyor.",
-  9:  "Dokuz yaşında. Büyümek istiyor ama büyümenin bedelini bilmiyor.",
-  10: "On yaşında. Çocukluk bitmek üzere. Geriye bak, güzel günlerdi.",
-  11: "On bir yaşında. Bir şeyler değişiyor ama ne olduğunu kimse söylemiyor.",
-  12: "On iki yaşında. İlk sigara. İlk yudum. Öksürdü ama 'iyi geldi' dedi. Artık geri dönüş yok. 🚬🥃",
-  13: "On üç yaşında. Sigara artık alışkanlık, alkol fırsat buldukça. Aile hâlâ bilmiyor.",
-  14: "On dört yaşında. Mahalle köşesi yeni ev oldu. Duman hiç eksik değil.",
-  15: "On beş yaşında. Kovboy ruhu uyanıyor. Kurallara saygı azalıyor, özgürlük artıyor.",
-  16: "On altı yaşında. Sigara paketi artık cepte taşınıyor. Gizleme zahmetine bile girmiyor.",
-  17: "On yedi yaşında. Büyük konuşuyor, büyük içiyor. Sabah kalkmak zorlaşıyor.",
-  18: "On sekiz yaşında. Resmen serbest. Ama zaten serbest yaşıyordu, fark şimdi kağıt üstünde. 🎉",
-  19: "On dokuz yaşında. Hayat hızlanıyor, sigara bitmez, bardak dolmaz.",
-  20: "Yirmi yaşında. Pişmanlık yok. Biraz yorgunluk var ama o da geçer deniyor.",
-  21: "Yirmi bir yaşında. Artık her şey açık, her şey serbest. Karaciğer henüz şikayet etmiyor.",
-  22: "Yirmi iki yaşında. Sabah öksürüğü artık rutin. 'Geçer' deniyor, geçmiyor.",
-  23: "Yirmi üç yaşında. Hâlâ ayakta, hâlâ güçlü. Vücut itiraz ediyor ama kafa dinlemiyor.",
-  24: "Yirmi dört yaşında. Son adım kaldı. Kasaba seni bekliyor kovboy.",
-  25: "YİRMİ BEŞ. ŞERİF FORMU. Kasabanın en tehlikeli, en dumanli, en efsane kovboyu. 🔥🤠"
-};
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
 
-const statuses = [
-  { min: 0,  max: 3,  label: "BEBEK"         },
-  { min: 4,  max: 6,  label: "VELET"         },
-  { min: 7,  max: 9,  label: "ÇAYLAK"        },
-  { min: 10, max: 12, label: "SOKAK ÇOCUĞU"  },
-  { min: 13, max: 15, label: "KABADAYI"      },
-  { min: 16, max: 18, label: "SERSERİ"       },
-  { min: 19, max: 21, label: "KÜLHANBEYİ"   },
-  { min: 22, max: 23, label: "EŞKIYA"        },
-  { min: 24, max: 24, label: "KAÇAK"         },
-  { min: 25, max: 99, label: "KOVBOY 🤠"     }
-];
+      function lerp(start, end, amount) {
+        return start + (end - start) * amount;
+      }
 
-function getStatus(a) {
-  return statuses.find(s => a >= s.min && a <= s.max)?.label || "KOVBOY";
-}
+      function random(min, max) {
+        return min + Math.random() * (max - min);
+      }
 
-function getPhoto(a) {
-  return photos.find(p => a < p.max)?.src || "kovboy.webp";
-}
+      function choose(list) {
+        return list[Math.floor(Math.random() * list.length)];
+      }
 
-function updatePhoto() {
-  const src = getPhoto(age);
-  const currentDiv = document.getElementById("bg" + activeBg);
-  const nextDiv    = document.getElementById("bg" + (activeBg === "A" ? "B" : "A"));
+      function getZone() {
+        return zones[(game.stage - 1) % zones.length];
+      }
 
-  if (currentDiv.style.backgroundImage === `url("${src}")` ||
-      currentDiv.style.backgroundImage === `url('${src}')`) return;
+      function getStageGoal(stage) {
+        return 390 + (stage - 1) * 105;
+      }
 
-  nextDiv.style.backgroundImage = `url('${src}')`;
-  nextDiv.style.opacity = "1";
-  currentDiv.style.opacity = "0";
-  activeBg = activeBg === "A" ? "B" : "A";
-}
+      function getCrystalTarget(stage) {
+        return 3 + Math.floor((stage - 1) / 2);
+      }
 
-function renderBullets() {
-  const el = document.getElementById("bulletsUI");
-  el.innerHTML = "";
-  for (let i = 0; i < 6; i++) {
-    const b = document.createElement("div");
-    b.className = "bullet" + (i < bullets ? " active" : "");
-    el.appendChild(b);
-  }
-}
+      function getGroundY() {
+        return view.height - clamp(view.height * 0.085, 44, 70);
+      }
 
-function spawnConfetti() {
-  const colors = ["#ffd27d","#ff6b6b","#6bffb8","#6bb5ff","#ff6bde","#fff"];
-  for (let i = 0; i < 80; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti-piece";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.background = colors[Math.floor(Math.random() * colors.length)];
-    c.style.width  = (8 + Math.random() * 8) + "px";
-    c.style.height = (8 + Math.random() * 8) + "px";
-    c.style.animationDuration = (1.5 + Math.random() * 2) + "s";
-    c.style.animationDelay    = (Math.random() * 1.5) + "s";
-    document.body.appendChild(c);
-    c.addEventListener("animationend", () => c.remove());
-  }
-}
+      function roundedRectPath(context, x, y, width, height, radius) {
+        const r = Math.min(radius, width * 0.5, height * 0.5);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      }
 
-function shoot() {
-  if (locked) return;
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const width = Math.max(1, Math.round(rect.width));
+        const height = Math.max(1, Math.round(rect.height));
+        const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
 
-  const gun         = document.getElementById("gun");
-  const reloadAudio = document.getElementById("reload");
-  const music       = document.getElementById("music");
-  const rt          = document.getElementById("reloadText");
+        view.width = width;
+        view.height = height;
+        view.dpr = dpr;
+        canvas.width = Math.max(1, Math.round(width * dpr));
+        canvas.height = Math.max(1, Math.round(height * dpr));
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = false;
 
-  if (age === 0) {
-    music.volume = 0.28;
-    music.play().catch(() => {});
-  }
+        player.size = clamp(view.width * 0.195, 58, 86);
+        const sidePadding = player.size * 0.5 + 8;
+        player.x = clamp(player.x || view.width * 0.5, sidePadding, view.width - sidePadding);
+        player.targetX = clamp(player.targetX || player.x, sidePadding, view.width - sidePadding);
+        player.y = getGroundY() - 4;
+        buildBackground();
+      }
 
-  if (bullets <= 0) {
-    locked = true;
-    rt.style.opacity = "1";
+      function buildBackground() {
+        const zone = getZone();
+        background.sparkles.length = 0;
+        background.clouds.length = 0;
+        background.hills.length = 0;
+        background.flowers.length = 0;
 
-    reloadAudio.currentTime = 0;
-    reloadAudio.volume = muted ? 0 : Math.min(1, sfxVolume * 8);
-    reloadAudio.playbackRate = 0.9;
-    reloadAudio.play().catch(() => {});
+        const skyCount = Math.max(18, Math.floor(view.width / 16));
+        for (let index = 0; index < skyCount; index += 1) {
+          background.sparkles.push({
+            x: random(6, Math.max(7, view.width - 6)),
+            y: random(70, Math.max(82, view.height * 0.52)),
+            size: choose([2, 3, 4]),
+            color: choose(["#ffffff", "#f8b5d6", "#d9c2ff", "#fff0a8"]),
+            phase: random(0, TAU)
+          });
+        }
 
-    document.body.style.animation = "shake 0.2s";
-    setTimeout(() => document.body.style.animation = "", 200);
+        for (let index = 0; index < 6; index += 1) {
+          background.clouds.push({
+            x: random(-40, view.width + 40),
+            y: random(90, Math.max(105, view.height * 0.42)),
+            scale: random(0.6, 1.15),
+            speed: random(3, 8)
+          });
+        }
 
-    setTimeout(() => {
-      bullets = 6;
-      locked  = false;
-      renderBullets();
-      rt.style.opacity = "0";
-    }, 1400);
-    return;
-  }
+        const hillBlock = clamp(view.width * 0.1, 28, 48);
+        const hillCount = Math.ceil(view.width / hillBlock) + 3;
+        for (let index = 0; index < hillCount; index += 1) {
+          background.hills.push({
+            x: (index - 1) * hillBlock,
+            width: hillBlock + 1,
+            height: random(view.height * 0.09, view.height * 0.21),
+            tone: choose(zone.hillTones),
+            cap: choose(zone.hillCaps),
+            specks: Math.floor(random(1, 4))
+          });
+        }
 
-  bullets--;
-  age++;
+        for (let index = 0; index < Math.max(10, Math.floor(view.width / 24)); index += 1) {
+          background.flowers.push({
+            x: random(2, Math.max(3, view.width - 2)),
+            y: random(8, 40),
+            color: choose(["#ff9bc5", "#fff1a8", "#dcb7ff", "#fffaff"]),
+            size: choose([2, 3, 4])
+          });
+        }
+      }
 
-  gun.currentTime = 0;
-  gun.volume = muted ? 0 : sfxVolume;
-  gun.playbackRate = 0.82 + Math.random() * 0.08;
-  gun.play().catch(() => {});
+      function resetGame() {
+        obstacles.length = 0;
+        pickups.length = 0;
+        particles.length = 0;
+        floatTexts.length = 0;
 
-  document.body.style.animation = "shake 0.15s";
-  setTimeout(() => document.body.style.animation = "", 150);
-  const ageEl = document.getElementById("age");
-  ageEl.style.transform = "scale(1.25)";
-  setTimeout(() => ageEl.style.transform = "scale(1)", 130);
+        game.phase = "intro";
+        game.elapsed = 0;
+        game.introTimer = 2;
+        game.score = 0;
+        game.scoreFraction = 0;
+        game.obstacleTimer = 0.55;
+        game.pickupTimer = 2.6;
+        game.sinemTimer = 0;
+        game.cooldownTimer = 0;
+        game.shakeTimer = 0;
+        game.shakeDuration = 0;
+        game.shakePower = 0;
+        game.combo = 0;
+        game.comboTimer = 0;
+        game.stage = 1;
+        game.stageProgress = 0;
+        game.stageGoal = getStageGoal(game.stage);
+        game.stageClearTimer = 0;
+        game.crystalCount = 0;
+        game.crystalTarget = getCrystalTarget(game.stage);
+        game.missionComplete = false;
+        game.energy = 0;
+        game.powerTimer = 0;
+        game.magnetLevel = 0;
+        game.fortuneLevel = 0;
+        game.graceCharges = 0;
+        game.nearMisses = 0;
+        player.x = view.width * 0.5;
+        player.targetX = player.x;
+        player.y = getGroundY() - 4;
+        player.bob = 0;
+        player.tilt = 0;
 
-  document.getElementById("age").innerText      = age;
-  document.getElementById("hudStatus").innerText = getStatus(age);
-  document.getElementById("text").innerText      = messages[age] || "Yol devam ediyor...";
+        restartOverlay.classList.remove("is-visible");
+        upgradeOverlay.classList.remove("is-visible");
+        buildBackground();
+        updateScoreDisplay(true);
+        updateHelpButton(true);
+        updatePowerButton(true);
+        updateAdventureDisplay(true);
+        lastFrameTime = performance.now();
+      }
 
-  renderBullets();
-  updatePhoto();
+      function startAudio() {
+        const AudioConstructor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioConstructor) {
+          return;
+        }
 
-  if (age >= target) {
-    setTimeout(() => {
-      document.querySelectorAll("#bgA::after, #bgB::after").forEach(el => {
-        el.style.filter = "brightness(1) contrast(1) saturate(1)";
+        if (!audioContext) {
+          audioContext = new AudioConstructor();
+        }
+
+        if (audioContext.state === "suspended") {
+          audioContext.resume().catch(() => {});
+        }
+      }
+
+      function playTone(options) {
+        if (!audioContext || audioContext.state !== "running") {
+          return;
+        }
+
+        const now = audioContext.currentTime;
+        const duration = options.duration || 0.12;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = options.type || "sine";
+        oscillator.frequency.setValueAtTime(options.frequency || 440, now);
+        if (options.slideTo) {
+          oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, options.slideTo), now + duration);
+        }
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(options.volume || 0.05, now + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(now);
+        oscillator.stop(now + duration + 0.025);
+      }
+
+      function playCollectSound(type) {
+        if (type === "crystal") {
+          playTone({ frequency: 620, slideTo: 1020, duration: 0.14, volume: 0.05, type: "sine" });
+          window.setTimeout(() => playTone({ frequency: 960, slideTo: 1480, duration: 0.16, volume: 0.038, type: "triangle" }), 48);
+        } else if (type === "milk") {
+          playTone({ frequency: 450, slideTo: 780, duration: 0.16, volume: 0.055, type: "triangle" });
+          window.setTimeout(() => playTone({ frequency: 880, slideTo: 1150, duration: 0.1, volume: 0.04, type: "sine" }), 55);
+        } else {
+          playTone({ frequency: 580, slideTo: 920, duration: 0.13, volume: 0.05, type: "sine" });
+        }
+      }
+
+      function playSinemSound() {
+        playTone({ frequency: 360, slideTo: 720, duration: 0.24, volume: 0.055, type: "triangle" });
+        window.setTimeout(() => playTone({ frequency: 770, slideTo: 1180, duration: 0.19, volume: 0.045, type: "sine" }), 85);
+      }
+
+      function playExplosionSound() {
+        playTone({ frequency: 210, slideTo: 95, duration: 0.11, volume: 0.06, type: "square" });
+      }
+
+      function playCrashSound() {
+        playTone({ frequency: 180, slideTo: 55, duration: 0.22, volume: 0.07, type: "sawtooth" });
+      }
+
+      function playPowerSound() {
+        playTone({ frequency: 260, slideTo: 520, duration: 0.18, volume: 0.055, type: "square" });
+        window.setTimeout(() => playTone({ frequency: 700, slideTo: 1040, duration: 0.16, volume: 0.045, type: "triangle" }), 75);
+      }
+
+      function playStageSound() {
+        playTone({ frequency: 500, slideTo: 760, duration: 0.14, volume: 0.05, type: "triangle" });
+        window.setTimeout(() => playTone({ frequency: 820, slideTo: 1220, duration: 0.22, volume: 0.045, type: "sine" }), 90);
+      }
+
+      function updateScoreDisplay(force) {
+        const text = String(Math.floor(game.score));
+        if (force || text !== game.lastScoreText) {
+          game.lastScoreText = text;
+          scoreValue.textContent = text;
+        }
+      }
+
+      function addScore(points) {
+        game.score += points;
+        if (game.phase !== "gameover" && game.phase !== "upgrade") {
+          game.stageProgress += points;
+        }
+        updateScoreDisplay(false);
+        updateAdventureDisplay(false);
+      }
+
+      function updateAdventureDisplay(force) {
+        const zone = getZone();
+        const progress = clamp(game.stageProgress / Math.max(1, game.stageGoal), 0, 1);
+        const progressPercent = Math.round(progress * 100);
+        const missionText = game.missionComplete
+          ? "TAMAMLANDI!"
+          : game.crystalCount + " / " + game.crystalTarget;
+        const energyPercent = Math.round(game.energy);
+        const boosts = [];
+        if (game.magnetLevel > 0) {
+          boosts.push("🧲" + game.magnetLevel);
+        }
+        if (game.fortuneLevel > 0) {
+          boosts.push("💎" + game.fortuneLevel);
+        }
+        if (game.graceCharges > 0) {
+          boosts.push("🫧" + game.graceCharges);
+        }
+        const boostText = boosts.length > 0 ? "GÜÇLER: " + boosts.join("  ") : "GÜÇLER: Keşfediliyor";
+        const nextKey = [
+          zone.name,
+          game.stage,
+          progressPercent,
+          missionText,
+          energyPercent,
+          game.graceCharges,
+          game.magnetLevel,
+          game.fortuneLevel,
+          boostText
+        ].join("|");
+
+        if (!force && nextKey === game.lastAdventureLabel) {
+          return;
+        }
+
+        game.lastAdventureLabel = nextKey;
+        zoneName.textContent = zone.name;
+        stageValue.textContent = "BÖLÜM " + game.stage;
+        stageProgressText.textContent = progressPercent + "%";
+        stageProgressFill.style.width = progressPercent + "%";
+        missionLabel.textContent = game.missionComplete
+          ? "KRİSTAL MİSYONU ✓"
+          : "KRİSTAL MİSYONU";
+        missionValue.textContent = missionText;
+        energyValue.textContent = energyPercent + "%";
+        energyFill.style.width = energyPercent + "%";
+        upgradeStatus.textContent = boostText;
+      }
+
+      function updatePowerButton(force) {
+        let mainText = "Pati Patlaması";
+        let subText = "Enerji " + Math.round(game.energy) + "%";
+        let label = "Pati Patlaması için enerji topla";
+        let mode = "charging";
+        let disabled = true;
+
+        if (game.phase === "gameover") {
+          mainText = "Pati Dinleniyor";
+          subText = "Yeni turda hazır";
+          label = "Pati Patlaması yeni turda hazır";
+          mode = "charging";
+        } else if (game.phase === "upgrade") {
+          mainText = "Sandık Açılıyor";
+          subText = "Bir sihir seç";
+          label = "Bölüm ödülü seçiliyor";
+          mode = "charging";
+        } else if (game.powerTimer > 0) {
+          const seconds = Math.max(1, Math.ceil(game.powerTimer));
+          mainText = "PATİ MODU";
+          subText = seconds + " sn patlama!";
+          label = "Pati Patlaması aktif, " + seconds + " saniye";
+          mode = "active";
+        } else if (game.energy >= 100) {
+          mainText = "Pati Patlaması";
+          subText = "Hazır! Dokun ♥";
+          label = "Pati Patlamasını kullan";
+          mode = "ready";
+          disabled = false;
+        }
+
+        const nextKey = mode + "|" + mainText + "|" + subText + "|" + disabled;
+        if (!force && nextKey === game.lastPowerLabel) {
+          return;
+        }
+
+        game.lastPowerLabel = nextKey;
+        powerMain.textContent = mainText;
+        powerStatus.textContent = subText;
+        powerButton.setAttribute("aria-label", label);
+        powerButton.disabled = disabled;
+        powerButton.classList.toggle("is-ready", mode === "ready");
+        powerButton.classList.toggle("is-active", mode === "active");
+      }
+
+      function gainEnergy(amount) {
+        if (game.phase === "gameover" || game.phase === "upgrade") {
+          return;
+        }
+
+        const previousEnergy = game.energy;
+        game.energy = clamp(game.energy + amount, 0, 100);
+        if (previousEnergy < 100 && game.energy >= 100) {
+          addFloatText("Pati Patlaması Hazır!", player.x, player.y - player.size * 1.82, "#b56a54", 0.82);
+          burst(player.x, player.y - player.size * 0.62, 13, ["#ffe58d", "#ffc28d", "#fffaff", "#ff9fc9"], {
+            minSpeed: 35,
+            maxSpeed: 125,
+            lift: 24,
+            heartChance: 0.15,
+            minSize: 3,
+            maxSize: 7,
+            minLife: 0.35,
+            maxLife: 0.7
+          });
+        }
+        updatePowerButton(false);
+        updateAdventureDisplay(false);
+      }
+
+      function updateHelpButton(force) {
+        let label = "";
+        let mainText = "";
+        let subText = "";
+        let mode = "ready";
+        let disabled = false;
+
+        if (game.phase === "gameover") {
+          mainText = "Sinem Dinleniyor";
+          subText = "Yeni turda hazır ♥";
+          label = "Sinem Dinleniyor";
+          mode = "cooling";
+          disabled = true;
+        } else if (game.phase === "upgrade") {
+          mainText = "Sinem Bekliyor";
+          subText = "Önce sandığı aç";
+          label = "Bölüm ödülü seçilirken Sinem yardımı bekliyor";
+          mode = "cooling";
+          disabled = true;
+        } else if (game.sinemTimer > 0) {
+          const seconds = Math.max(1, Math.ceil(game.sinemTimer));
+          mainText = "SİNEM MODU";
+          subText = seconds + " sn koruma!";
+          label = "Sinem modu aktif, " + seconds + " saniye koruma";
+          mode = "active";
+          disabled = true;
+        } else if (game.cooldownTimer > 0) {
+          const seconds = Math.max(1, Math.ceil(game.cooldownTimer));
+          mainText = "Yenileniyor";
+          subText = seconds + " sn";
+          label = "Sinem yardımı " + seconds + " saniye sonra hazır";
+          mode = "cooling";
+          disabled = true;
+        } else {
+          mainText = "Sinem'den<br>Yardım Al!";
+          subText = "Hazır! ♥";
+          label = "Sinem'den Yardım Al";
+        }
+
+        const nextKey = mode + "|" + mainText + "|" + subText + "|" + disabled;
+        if (!force && nextKey === game.lastHelpLabel) {
+          return;
+        }
+
+        game.lastHelpLabel = nextKey;
+        helpMain.innerHTML = mainText;
+        helpCountdown.textContent = subText;
+        helpButton.setAttribute("aria-label", label);
+        helpButton.disabled = disabled;
+        helpButton.classList.toggle("is-active", mode === "active");
+        helpButton.classList.toggle("is-cooling", mode === "cooling");
+      }
+
+      function triggerShake(duration, power) {
+        if (duration >= game.shakeTimer) {
+          game.shakeTimer = duration;
+          game.shakeDuration = duration;
+          game.shakePower = power;
+        }
+      }
+
+      function addFloatText(text, x, y, color, scale) {
+        if (floatTexts.length >= MAX_FLOAT_TEXTS) {
+          floatTexts.shift();
+        }
+
+        floatTexts.push({
+          text,
+          x,
+          y,
+          color,
+          scale: scale || 1,
+          life: 0.78,
+          maxLife: 0.78,
+          velocityY: random(-30, -20)
+        });
+      }
+
+      function addParticle(options) {
+        if (particles.length >= MAX_PARTICLES) {
+          particles.shift();
+        }
+
+        particles.push({
+          x: options.x,
+          y: options.y,
+          velocityX: options.velocityX,
+          velocityY: options.velocityY,
+          gravity: options.gravity === undefined ? 260 : options.gravity,
+          size: options.size,
+          color: options.color,
+          life: options.life,
+          maxLife: options.life,
+          kind: options.kind || "square",
+          rotation: options.rotation || 0,
+          spin: options.spin || 0
+        });
+      }
+
+      function burst(x, y, amount, colors, options) {
+        const settings = options || {};
+        for (let index = 0; index < amount; index += 1) {
+          const angle = random(0, TAU);
+          const speed = random(settings.minSpeed || 45, settings.maxSpeed || 170);
+          addParticle({
+            x,
+            y,
+            velocityX: Math.cos(angle) * speed,
+            velocityY: Math.sin(angle) * speed - (settings.lift || 0),
+            gravity: settings.gravity === undefined ? 270 : settings.gravity,
+            size: random(settings.minSize || 3, settings.maxSize || 7),
+            color: choose(colors),
+            life: random(settings.minLife || 0.38, settings.maxLife || 0.76),
+            kind: Math.random() < (settings.heartChance || 0.18) ? "heart" : "square",
+            rotation: random(0, TAU),
+            spin: random(-8, 8)
+          });
+        }
+      }
+
+      function getPlayerBounds() {
+        const width = player.size * 0.62;
+        const height = player.size * 0.94;
+        return {
+          left: player.x - width * 0.5,
+          top: player.y - player.size * 1.11,
+          right: player.x + width * 0.5,
+          bottom: player.y - player.size * 0.17
+        };
+      }
+
+      function rectanglesOverlap(first, second) {
+        return first.left < second.right && first.right > second.left && first.top < second.bottom && first.bottom > second.top;
+      }
+
+      function obstacleBounds(obstacle) {
+        const insetX = Math.max(4, obstacle.width * 0.1);
+        const insetY = Math.max(4, obstacle.height * 0.08);
+        return {
+          left: obstacle.x - obstacle.width * 0.5 + insetX,
+          top: obstacle.y + insetY,
+          right: obstacle.x + obstacle.width * 0.5 - insetX,
+          bottom: obstacle.y + obstacle.height - insetY
+        };
+      }
+
+      function pickupBounds(pickup) {
+        const radius = pickup.size * 0.35;
+        return {
+          left: pickup.x - radius,
+          top: pickup.y - radius,
+          right: pickup.x + radius,
+          bottom: pickup.y + radius
+        };
+      }
+
+      function createObstacle(x, y, width, height) {
+        obstacles.push({
+          x,
+          y,
+          width,
+          height,
+          speedMultiplier: random(0.91, 1.09),
+          colors: choose([
+            { front: "#ed76b2", top: "#ffb8da", side: "#be4a89", accent: "#ffd5e9" },
+            { front: "#b984e5", top: "#dac2ff", side: "#875cb8", accent: "#f0e4ff" },
+            { front: "#e98ec3", top: "#ffc3e2", side: "#b75691", accent: "#ffe3f2" },
+            { front: "#a98bd9", top: "#d5c7f5", side: "#7662a8", accent: "#efeaff" }
+          ]),
+          seed: Math.floor(random(0, 10000)),
+          wobble: random(0, TAU)
+        });
+      }
+
+      function spawnObstacles() {
+        const sideMargin = 10;
+        const firstWidth = random(player.size * 0.72, player.size * 1.18);
+        const firstHeight = random(firstWidth * 0.65, firstWidth * 1.02);
+        const firstX = random(sideMargin + firstWidth * 0.5, view.width - sideMargin - firstWidth * 0.5);
+        createObstacle(firstX, -firstHeight - 12, firstWidth, firstHeight);
+
+        const canSpawnPair = game.elapsed > 10 && view.width > 340 && Math.random() < 0.27;
+        if (!canSpawnPair) {
+          return;
+        }
+
+        const secondWidth = random(player.size * 0.65, player.size * 1.02);
+        const secondHeight = random(secondWidth * 0.65, secondWidth * 0.98);
+        let secondX = 0;
+        let foundLane = false;
+        const minimumGap = player.size * 0.86 + 58;
+
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+          const candidate = random(sideMargin + secondWidth * 0.5, view.width - sideMargin - secondWidth * 0.5);
+          const edgeDistance = Math.abs(candidate - firstX) - (firstWidth + secondWidth) * 0.5;
+          if (edgeDistance > minimumGap) {
+            secondX = candidate;
+            foundLane = true;
+            break;
+          }
+        }
+
+        if (foundLane) {
+          createObstacle(secondX, -secondHeight - random(22, 48), secondWidth, secondHeight);
+        }
+      }
+
+      function spawnPickup() {
+        const size = random(29, 39);
+        const crystalChance = clamp(
+          (game.missionComplete ? 0.18 : 0.46) + game.fortuneLevel * 0.16,
+          0.18,
+          0.86
+        );
+        const type = Math.random() < crystalChance
+          ? "crystal"
+          : (Math.random() < 0.56 ? "heart" : "milk");
+        pickups.push({
+          x: random(size, view.width - size),
+          y: -size - 20,
+          size,
+          type,
+          speedMultiplier: random(0.78, 0.94),
+          bobPhase: random(0, TAU),
+          spin: random(-2.5, 2.5)
+        });
+      }
+
+      function getObstacleInterval() {
+        return Math.max(0.43, 0.86 - game.elapsed * 0.014) + random(-0.075, 0.1);
+      }
+
+      function getFallSpeed() {
+        return Math.min(420, 210 + game.elapsed * 5.1);
+      }
+
+      function collectPickup(index) {
+        const pickup = pickups[index];
+        game.combo = game.comboTimer > 0 ? Math.min(3, game.combo + 1) : 1;
+        game.comboTimer = 1.5;
+
+        const baseScore = pickup.type === "crystal" ? 190 : (pickup.type === "milk" ? 125 : 75);
+        const points = baseScore * game.combo;
+        addScore(points);
+        playCollectSound(pickup.type);
+        triggerShake(pickup.type === "crystal" ? 0.18 : (pickup.type === "milk" ? 0.16 : 0.11), pickup.type === "crystal" ? 8 : (pickup.type === "milk" ? 7 : 5));
+
+        const colors = pickup.type === "crystal"
+          ? ["#8be6db", "#b69cff", "#fff8ad", "#fffaff", "#ff9fc9"]
+          : (pickup.type === "milk"
+            ? ["#fffaff", "#ff9fc9", "#f9dd83", "#cba4ff", "#b8e6c8"]
+            : ["#ff72b2", "#ffb3d6", "#fffaff", "#d2b4ff", "#ffe58d"]);
+        burst(pickup.x, pickup.y, pickup.type === "crystal" ? 28 : (pickup.type === "milk" ? 24 : 19), colors, {
+          minSpeed: 50,
+          maxSpeed: 180,
+          lift: 30,
+          heartChance: 0.38,
+          minSize: 3,
+          maxSize: 8,
+          minLife: 0.38,
+          maxLife: 0.9
+        });
+        const pickupLabel = pickup.type === "crystal" ? "Kristal!" : (pickup.type === "milk" ? "Süt!" : "♥");
+        addFloatText("+" + points + " " + pickupLabel, pickup.x, pickup.y - 12, "#a34f85", 1);
+        if (game.combo > 1) {
+          addFloatText("x" + game.combo + " Tatlı Seri!", player.x, player.y - player.size * 1.65, "#8658b6", 0.8);
+        }
+
+        if (pickup.type === "crystal") {
+          game.crystalCount += 1;
+          if (!game.missionComplete && game.crystalCount >= game.crystalTarget) {
+            game.missionComplete = true;
+            addFloatText("Kristal Misyonu Tamam!", player.x, player.y - player.size * 1.95, "#7160ad", 0.85);
+            burst(player.x, player.y - player.size * 0.72, 22, ["#8be6db", "#d7baff", "#fff4a7", "#fffaff"], {
+              minSpeed: 42,
+              maxSpeed: 155,
+              lift: 35,
+              heartChance: 0.22,
+              minSize: 3,
+              maxSize: 8,
+              minLife: 0.35,
+              maxLife: 0.82
+            });
+          }
+        }
+
+        gainEnergy(pickup.type === "crystal" ? 42 : (pickup.type === "milk" ? 28 : 19));
+        updateAdventureDisplay(false);
+
+        pickups.splice(index, 1);
+      }
+
+      function destroyObstacle(index, source) {
+        const obstacle = obstacles[index];
+        const reason = source || "sinem";
+        const points = reason === "power" ? 45 : (reason === "grace" ? 15 : 30);
+        addScore(points);
+        gainEnergy(reason === "sinem" ? 9 : (reason === "power" ? 6 : 0));
+        playExplosionSound();
+        triggerShake(0.09, 4);
+        burst(obstacle.x, obstacle.y + obstacle.height * 0.5, 18, [
+          obstacle.colors.front,
+          obstacle.colors.top,
+          obstacle.colors.side,
+          "#fff7fc",
+          "#ff86be"
+        ], {
+          minSpeed: 45,
+          maxSpeed: 190,
+          lift: 38,
+          heartChance: 0.22,
+          minSize: 3,
+          maxSize: 8,
+          minLife: 0.3,
+          maxLife: 0.67
+        });
+        addFloatText("+" + points + " Pat!", obstacle.x, obstacle.y, "#a45288", 0.82);
+        obstacles.splice(index, 1);
+      }
+
+      function activateSinem() {
+        if (game.phase === "gameover" || game.phase === "upgrade" || game.sinemTimer > 0 || game.cooldownTimer > 0) {
+          return;
+        }
+
+        startAudio();
+        game.sinemTimer = 8;
+        triggerShake(0.18, 8);
+        burst(player.x, player.y - player.size * 0.68, 31, ["#ff79b8", "#efb5ff", "#8fe4da", "#fff5a6", "#fffaff"], {
+          minSpeed: 55,
+          maxSpeed: 205,
+          lift: 52,
+          heartChance: 0.55,
+          minSize: 3,
+          maxSize: 9,
+          minLife: 0.48,
+          maxLife: 1.05
+        });
+        addFloatText("Sinem Gücü!", player.x, player.y - player.size * 1.72, "#864db2", 1.22);
+        playSinemSound();
+        updateHelpButton(true);
+      }
+
+      function activatePower() {
+        if (game.phase === "gameover" || game.phase === "upgrade" || game.powerTimer > 0 || game.energy < 100) {
+          return;
+        }
+
+        startAudio();
+        game.energy = 0;
+        game.powerTimer = 5;
+        triggerShake(0.19, 9);
+        burst(player.x, player.y - player.size * 0.6, 34, ["#ffe78d", "#ffc887", "#ff8dbd", "#fffaff", "#d1b5ff"], {
+          minSpeed: 56,
+          maxSpeed: 210,
+          lift: 54,
+          heartChance: 0.28,
+          minSize: 3,
+          maxSize: 9,
+          minLife: 0.44,
+          maxLife: 1.02
+        });
+        addFloatText("Pati Patlaması!", player.x, player.y - player.size * 1.8, "#b55e69", 1.08);
+        playPowerSound();
+        updatePowerButton(true);
+        updateAdventureDisplay(false);
+      }
+
+      function completeStage() {
+        if (game.phase !== "playing" || game.stageProgress < game.stageGoal || !game.missionComplete) {
+          return;
+        }
+
+        game.phase = "upgrade";
+        game.stageClearTimer = 0.65;
+        game.powerTimer = 0;
+        obstacles.length = 0;
+        pickups.length = 0;
+        triggerShake(0.22, 10);
+        burst(player.x, player.y - player.size * 0.72, 42, ["#ff98c5", "#d3b4ff", "#8fe4d3", "#fff0a6", "#fffaff"], {
+          minSpeed: 55,
+          maxSpeed: 225,
+          lift: 65,
+          heartChance: 0.38,
+          minSize: 3,
+          maxSize: 10,
+          minLife: 0.52,
+          maxLife: 1.15
+        });
+        addFloatText("Bölüm Tamamlandı!", player.x, player.y - player.size * 1.85, "#8459a7", 1.05);
+        upgradeText.textContent = getZone().name + " tamam! Yeni bölüm için bir sihir seç.";
+        upgradeOverlay.classList.add("is-visible");
+        playStageSound();
+        updateHelpButton(true);
+        updatePowerButton(true);
+      }
+
+      function applyUpgrade(upgrade) {
+        if (game.phase !== "upgrade") {
+          return;
+        }
+
+        if (upgrade === "magnet") {
+          game.magnetLevel = Math.min(3, game.magnetLevel + 1);
+          addFloatText("Kalp Mıknatısı +" + game.magnetLevel, player.x, player.y - player.size * 1.75, "#e4649d", 0.88);
+        } else if (upgrade === "fortune") {
+          game.fortuneLevel = Math.min(3, game.fortuneLevel + 1);
+          addFloatText("Kristal Şansı +" + game.fortuneLevel, player.x, player.y - player.size * 1.75, "#7562b3", 0.88);
+        } else if (upgrade === "grace") {
+          game.graceCharges += 2;
+          addFloatText("Yumuşak İniş +2 Kalkan!", player.x, player.y - player.size * 1.75, "#4f9d79", 0.88);
+        } else {
+          return;
+        }
+
+        startAudio();
+        playStageSound();
+        game.stage += 1;
+        game.stageProgress = 0;
+        game.stageGoal = getStageGoal(game.stage);
+        game.stageClearTimer = 0;
+        game.crystalCount = 0;
+        game.crystalTarget = getCrystalTarget(game.stage);
+        game.missionComplete = false;
+        game.obstacleTimer = 0.7;
+        game.pickupTimer = 1.55;
+        game.phase = "playing";
+        upgradeOverlay.classList.remove("is-visible");
+        buildBackground();
+        burst(player.x, player.y - player.size * 0.65, 22, ["#ff9fc9", "#d7bbff", "#b8ead0", "#fffaff"], {
+          minSpeed: 40,
+          maxSpeed: 155,
+          lift: 35,
+          heartChance: 0.25,
+          minSize: 3,
+          maxSize: 8,
+          minLife: 0.4,
+          maxLife: 0.82
+        });
+        updateAdventureDisplay(true);
+        updateHelpButton(true);
+        updatePowerButton(true);
+      }
+
+      function endGame() {
+        if (game.phase === "gameover") {
+          return;
+        }
+
+        game.phase = "gameover";
+        game.sinemTimer = 0;
+        game.cooldownTimer = 0;
+        game.powerTimer = 0;
+        triggerShake(0.2, 10);
+        burst(player.x, player.y - player.size * 0.62, 26, ["#ff8fbd", "#fffaff", "#d9b5f1", "#f5ccde"], {
+          minSpeed: 36,
+          maxSpeed: 160,
+          lift: 25,
+          heartChance: 0.25,
+          minSize: 3,
+          maxSize: 8,
+          minLife: 0.35,
+          maxLife: 0.75
+        });
+        playCrashSound();
+        finalScore.textContent = String(Math.floor(game.score));
+        upgradeOverlay.classList.remove("is-visible");
+        restartOverlay.classList.add("is-visible");
+        updateHelpButton(true);
+        updatePowerButton(true);
+      }
+
+      function updatePlayer(delta) {
+        const sidePadding = player.size * 0.5 + 8;
+        player.targetX = clamp(player.targetX, sidePadding, view.width - sidePadding);
+        const difference = player.targetX - player.x;
+        const follow = Math.min(1, delta * 16);
+        player.x += difference * follow;
+        player.tilt = lerp(player.tilt, clamp(difference / Math.max(1, player.size), -0.22, 0.22), Math.min(1, delta * 10));
+        player.bob += delta * 6;
+        player.y = getGroundY() - 4;
+      }
+
+      function updateParticles(delta) {
+        for (let index = particles.length - 1; index >= 0; index -= 1) {
+          const particle = particles[index];
+          particle.life -= delta;
+          if (particle.life <= 0) {
+            particles.splice(index, 1);
+            continue;
+          }
+
+          particle.x += particle.velocityX * delta;
+          particle.y += particle.velocityY * delta;
+          particle.velocityY += particle.gravity * delta;
+          particle.velocityX *= 0.992;
+          particle.rotation += particle.spin * delta;
+        }
+
+        for (let index = floatTexts.length - 1; index >= 0; index -= 1) {
+          const floating = floatTexts[index];
+          floating.life -= delta;
+          if (floating.life <= 0) {
+            floatTexts.splice(index, 1);
+            continue;
+          }
+          floating.y += floating.velocityY * delta;
+        }
+      }
+
+      function updateTimers(delta) {
+        if (game.shakeTimer > 0) {
+          game.shakeTimer = Math.max(0, game.shakeTimer - delta);
+        }
+
+        if (game.comboTimer > 0) {
+          game.comboTimer -= delta;
+          if (game.comboTimer <= 0) {
+            game.comboTimer = 0;
+            game.combo = 0;
+          }
+        }
+
+        if (game.sinemTimer > 0) {
+          game.sinemTimer -= delta;
+          if (game.sinemTimer <= 0) {
+            game.sinemTimer = 0;
+            game.cooldownTimer = 30;
+          }
+          updateHelpButton(false);
+        } else if (game.cooldownTimer > 0) {
+          game.cooldownTimer = Math.max(0, game.cooldownTimer - delta);
+          updateHelpButton(false);
+        }
+
+        if (game.powerTimer > 0) {
+          game.powerTimer -= delta;
+          if (game.powerTimer <= 0) {
+            game.powerTimer = 0;
+            addFloatText("Pati Modu Bitti", player.x, player.y - player.size * 1.65, "#a76c75", 0.74);
+          }
+          updatePowerButton(false);
+        }
+      }
+
+      function updateWorld(delta) {
+        game.scoreFraction += delta * 10;
+        if (game.scoreFraction >= 1) {
+          const points = Math.floor(game.scoreFraction);
+          game.scoreFraction -= points;
+          addScore(points);
+        }
+
+        game.obstacleTimer -= delta;
+        if (game.obstacleTimer <= 0) {
+          spawnObstacles();
+          game.obstacleTimer += getObstacleInterval();
+        }
+
+        game.pickupTimer -= delta;
+        if (game.pickupTimer <= 0) {
+          spawnPickup();
+          game.pickupTimer = random(2.7, 4.5);
+        }
+
+        const playerBounds = getPlayerBounds();
+        const fallSpeed = getFallSpeed();
+        for (let index = obstacles.length - 1; index >= 0; index -= 1) {
+          const obstacle = obstacles[index];
+          obstacle.y += fallSpeed * obstacle.speedMultiplier * delta;
+          obstacle.wobble += delta * 1.2;
+
+          if (obstacle.y > view.height + obstacle.height + 24) {
+            obstacles.splice(index, 1);
+            continue;
+          }
+
+          if (rectanglesOverlap(playerBounds, obstacleBounds(obstacle))) {
+            if (game.sinemTimer > 0) {
+              destroyObstacle(index, "sinem");
+            } else if (game.powerTimer > 0) {
+              destroyObstacle(index, "power");
+            } else if (game.graceCharges > 0) {
+              game.graceCharges -= 1;
+              destroyObstacle(index, "grace");
+              triggerShake(0.14, 6);
+              addFloatText("Yumuşak İniş!", player.x, player.y - player.size * 1.7, "#529677", 0.92);
+              updateAdventureDisplay(false);
+            } else {
+              endGame();
+              return;
+            }
+            continue;
+          }
+
+          const closeDistance = (obstacle.width + player.size * 0.62) * 0.5 + 24;
+          const passedPlayer = obstacle.y > playerBounds.bottom - 10 && obstacle.y < playerBounds.bottom + 58;
+          if (!obstacle.nearMissed && passedPlayer && Math.abs(obstacle.x - player.x) < closeDistance) {
+            obstacle.nearMissed = true;
+            game.nearMisses += 1;
+            gainEnergy(11);
+            addFloatText("Yakın Kaçış! +Enerji", player.x, player.y - player.size * 1.62, "#a97553", 0.72);
+          }
+        }
+
+        for (let index = pickups.length - 1; index >= 0; index -= 1) {
+          const pickup = pickups[index];
+          pickup.y += fallSpeed * pickup.speedMultiplier * delta;
+          pickup.bobPhase += delta * 5;
+
+          if (game.magnetLevel > 0) {
+            const magnetX = player.x - pickup.x;
+            const magnetY = (player.y - player.size * 0.65) - pickup.y;
+            const distance = Math.hypot(magnetX, magnetY);
+            const range = Math.min(view.width * 0.9, 190 + game.magnetLevel * 105);
+            if (distance > 1 && distance < range) {
+              const pull = (0.45 + (1 - distance / range) * 0.85) * (520 + game.magnetLevel * 260);
+              pickup.x += (magnetX / distance) * pull * delta;
+              pickup.y += (magnetY / distance) * pull * delta;
+            }
+          }
+
+          if (pickup.y > view.height + pickup.size + 24) {
+            pickups.splice(index, 1);
+            continue;
+          }
+
+          if (rectanglesOverlap(playerBounds, pickupBounds(pickup))) {
+            collectPickup(index);
+          }
+        }
+
+        completeStage();
+      }
+
+      function update(delta) {
+        updateParticles(delta);
+        updateTimers(delta);
+
+        if (game.phase === "gameover" || game.phase === "upgrade") {
+          return;
+        }
+
+        game.elapsed += delta;
+        updatePlayer(delta);
+
+        if (game.phase === "intro") {
+          game.introTimer -= delta;
+          if (game.introTimer <= 0) {
+            game.introTimer = 0;
+            game.phase = "playing";
+          }
+          return;
+        }
+
+        updateWorld(delta);
+      }
+
+      function drawCloud(x, y, scale) {
+        const unit = 16 * scale;
+        ctx.fillStyle = "rgba(255, 250, 253, 0.78)";
+        ctx.fillRect(x, y + unit * 0.72, unit * 4.2, unit * 0.86);
+        ctx.fillRect(x + unit * 0.55, y + unit * 0.34, unit * 2.85, unit * 1.23);
+        ctx.fillRect(x + unit * 1.22, y, unit * 1.28, unit * 1.55);
+        ctx.fillStyle = "rgba(232, 177, 210, 0.25)";
+        ctx.fillRect(x + unit * 0.4, y + unit * 1.58, unit * 3.5, unit * 0.19);
+      }
+
+      function drawBackground() {
+        const zone = getZone();
+        ctx.fillStyle = zone.sky;
+        ctx.fillRect(0, 0, view.width, view.height);
+        ctx.fillStyle = zone.skyLight;
+        ctx.fillRect(0, 0, view.width, Math.min(view.height * 0.28, 230));
+
+        for (const sparkle of background.sparkles) {
+          const twinkle = 0.55 + Math.sin(game.elapsed * 2.5 + sparkle.phase) * 0.35;
+          ctx.globalAlpha = twinkle;
+          ctx.fillStyle = sparkle.color;
+          ctx.fillRect(Math.round(sparkle.x), Math.round(sparkle.y), sparkle.size, sparkle.size);
+          if (sparkle.size >= 3) {
+            ctx.fillRect(Math.round(sparkle.x - 1), Math.round(sparkle.y + 1), sparkle.size + 2, 1);
+          }
+        }
+        ctx.globalAlpha = 1;
+
+        for (const cloud of background.clouds) {
+          const travel = ((game.elapsed * cloud.speed + cloud.x) % (view.width + 100)) - 50;
+          drawCloud(travel, cloud.y, cloud.scale);
+        }
+
+        const groundY = getGroundY();
+        for (const hill of background.hills) {
+          const topY = groundY - hill.height;
+          ctx.fillStyle = hill.tone;
+          ctx.fillRect(hill.x, topY, hill.width, hill.height + 2);
+          ctx.fillStyle = hill.cap;
+          ctx.fillRect(hill.x, topY, hill.width, Math.max(4, hill.width * 0.16));
+          ctx.fillStyle = "rgba(255,255,255,0.24)";
+          for (let speck = 0; speck < hill.specks; speck += 1) {
+            const px = hill.x + 5 + ((hill.specks * 11 + speck * 13) % Math.max(6, hill.width - 9));
+            const py = topY + 12 + ((speck * 17) % Math.max(10, hill.height - 15));
+            ctx.fillRect(Math.round(px), Math.round(py), 3, 3);
+          }
+        }
+
+        ctx.fillStyle = zone.ground;
+        ctx.fillRect(0, groundY, view.width, view.height - groundY);
+        ctx.fillStyle = zone.grass;
+        ctx.fillRect(0, groundY, view.width, 10);
+        ctx.fillStyle = zone.grassLight;
+        ctx.fillRect(0, groundY, view.width, 4);
+
+        const tileSize = 19;
+        for (let y = groundY + 12, row = 0; y < view.height; y += tileSize, row += 1) {
+          for (let x = (row % 2) * -8; x < view.width; x += tileSize) {
+            ctx.fillStyle = row % 2 === 0 ? "rgba(224,245,221,0.24)" : "rgba(97,162,124,0.16)";
+            ctx.fillRect(Math.round(x + 3), Math.round(y + 3), 5, 5);
+          }
+        }
+
+        for (const flower of background.flowers) {
+          const flowerY = groundY + flower.y;
+          if (flowerY > view.height - 3) {
+            continue;
+          }
+          ctx.fillStyle = flower.color;
+          ctx.fillRect(Math.round(flower.x), Math.round(flowerY), flower.size, flower.size);
+          ctx.fillStyle = "#fff9fb";
+          ctx.fillRect(Math.round(flower.x + flower.size * 0.35), Math.round(flowerY + flower.size * 0.35), 1.5, 1.5);
+        }
+      }
+
+      function drawPixelBlock(obstacle) {
+        const x = Math.round(obstacle.x - obstacle.width * 0.5);
+        const y = Math.round(obstacle.y);
+        const width = Math.round(obstacle.width);
+        const height = Math.round(obstacle.height);
+        const bevelX = clamp(Math.round(width * 0.16), 5, 13);
+        const bevelY = clamp(Math.round(height * 0.16), 5, 13);
+        const frontHeight = height - bevelY;
+        const frontWidth = width - bevelX;
+
+        ctx.fillStyle = obstacle.colors.side;
+        ctx.fillRect(x + frontWidth, y + bevelY, bevelX, frontHeight);
+        ctx.fillStyle = obstacle.colors.front;
+        ctx.fillRect(x, y + bevelY, frontWidth, frontHeight);
+        ctx.fillStyle = obstacle.colors.top;
+        ctx.beginPath();
+        ctx.moveTo(x, y + bevelY);
+        ctx.lineTo(x + bevelX, y);
+        ctx.lineTo(x + width, y);
+        ctx.lineTo(x + frontWidth, y + bevelY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = obstacle.colors.accent;
+        const pixelSize = clamp(Math.round(width * 0.1), 3, 7);
+        const offsetOne = (obstacle.seed % 11) / 11;
+        const offsetTwo = ((obstacle.seed * 7) % 13) / 13;
+        ctx.fillRect(Math.round(x + frontWidth * (0.16 + offsetOne * 0.24)), Math.round(y + bevelY + frontHeight * 0.19), pixelSize, pixelSize);
+        ctx.fillRect(Math.round(x + frontWidth * (0.5 + offsetTwo * 0.19)), Math.round(y + bevelY + frontHeight * 0.56), pixelSize, pixelSize);
+        ctx.fillStyle = "rgba(91,46,91,0.12)";
+        ctx.fillRect(x + 3, y + height - pixelSize - 3, Math.max(pixelSize, frontWidth * 0.26), pixelSize);
+      }
+
+      function drawPixelHeart(x, y, size, color) {
+        const unit = Math.max(1, size / 7);
+        const cells = [
+          [1, 0], [2, 0], [4, 0], [5, 0],
+          [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1],
+          [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2],
+          [1, 3], [2, 3], [3, 3], [4, 3], [5, 3],
+          [2, 4], [3, 4], [4, 4],
+          [3, 5]
+        ];
+        ctx.fillStyle = color;
+        for (const cell of cells) {
+          ctx.fillRect(x + (cell[0] - 3) * unit, y + (cell[1] - 2.5) * unit, Math.ceil(unit), Math.ceil(unit));
+        }
+        ctx.fillStyle = "rgba(255,255,255,0.58)";
+        ctx.fillRect(x - unit, y - unit * 1.5, Math.max(1, unit), Math.max(1, unit));
+      }
+
+      function drawMilkBottle(x, y, size) {
+        const width = size * 0.62;
+        const height = size * 0.92;
+        const left = x - width * 0.5;
+        const top = y - height * 0.5;
+        const neckWidth = width * 0.38;
+        const neckLeft = x - neckWidth * 0.5;
+
+        ctx.fillStyle = "#a25b90";
+        ctx.fillRect(Math.round(left - 2), Math.round(top + height * 0.25), Math.round(width + 4), Math.round(height * 0.75 + 2));
+        ctx.fillStyle = "#fffafe";
+        ctx.fillRect(Math.round(left), Math.round(top + height * 0.26), Math.round(width), Math.round(height * 0.7));
+        ctx.fillStyle = "#fffafe";
+        ctx.fillRect(Math.round(neckLeft), Math.round(top + height * 0.08), Math.round(neckWidth), Math.round(height * 0.24));
+        ctx.fillStyle = "#f27eae";
+        ctx.fillRect(Math.round(neckLeft - 2), Math.round(top), Math.round(neckWidth + 4), Math.round(height * 0.12));
+        ctx.fillStyle = "#ffc4dc";
+        ctx.fillRect(Math.round(left + width * 0.18), Math.round(top + height * 0.42), Math.round(width * 0.64), Math.round(height * 0.3));
+        drawPixelHeart(x, y + height * 0.02, size * 0.26, "#e95e9a");
+        ctx.fillStyle = "rgba(255,255,255,0.78)";
+        ctx.fillRect(Math.round(left + width * 0.12), Math.round(top + height * 0.34), Math.max(2, Math.round(width * 0.12)), Math.round(height * 0.36));
+      }
+
+      function drawCrystal(x, y, size) {
+        const width = size * 0.62;
+        const height = size * 0.92;
+        ctx.fillStyle = "#7657ad";
+        ctx.beginPath();
+        ctx.moveTo(x, y - height * 0.56);
+        ctx.lineTo(x + width * 0.53, y - height * 0.14);
+        ctx.lineTo(x + width * 0.28, y + height * 0.5);
+        ctx.lineTo(x, y + height * 0.66);
+        ctx.lineTo(x - width * 0.28, y + height * 0.5);
+        ctx.lineTo(x - width * 0.53, y - height * 0.14);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#89e6db";
+        ctx.beginPath();
+        ctx.moveTo(x, y - height * 0.43);
+        ctx.lineTo(x + width * 0.31, y - height * 0.12);
+        ctx.lineTo(x, y + height * 0.49);
+        ctx.lineTo(x - width * 0.31, y - height * 0.12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#d7c6ff";
+        ctx.beginPath();
+        ctx.moveTo(x, y - height * 0.43);
+        ctx.lineTo(x, y + height * 0.49);
+        ctx.lineTo(x - width * 0.31, y - height * 0.12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#fff9ff";
+        ctx.fillRect(Math.round(x - width * 0.14), Math.round(y - height * 0.26), Math.max(2, Math.round(width * 0.13)), Math.max(3, Math.round(height * 0.21)));
+        ctx.fillStyle = "#fff0a8";
+        ctx.fillRect(Math.round(x + width * 0.13), Math.round(y + height * 0.11), Math.max(2, Math.round(width * 0.1)), Math.max(2, Math.round(height * 0.1)));
+      }
+
+      function drawPickup(pickup) {
+        const bob = Math.sin(pickup.bobPhase) * 3;
+        ctx.save();
+        ctx.translate(Math.round(pickup.x), Math.round(pickup.y + bob));
+        ctx.rotate(Math.sin(pickup.bobPhase * 0.5) * 0.08);
+        if (pickup.type === "heart") {
+          drawPixelHeart(0, 0, pickup.size, "#ff6eae");
+        } else if (pickup.type === "milk") {
+          drawMilkBottle(0, 0, pickup.size);
+        } else {
+          drawCrystal(0, 0, pickup.size);
+        }
+        ctx.restore();
+      }
+
+      function drawShield() {
+        if (game.sinemTimer <= 0) {
+          return;
+        }
+
+        const centerX = player.x;
+        const centerY = player.y - player.size * 0.68;
+        const pulse = 1 + Math.sin(game.elapsed * 9) * 0.05;
+        const alpha = 0.48 + Math.sin(game.elapsed * 7) * 0.16;
+        const rings = [
+          { radius: player.size * 0.82 * pulse, color: "#ff73b7", width: 4 },
+          { radius: player.size * 0.98 * pulse, color: "#d69dff", width: 3 },
+          { radius: player.size * 1.12 * pulse, color: "#83e2d4", width: 2 }
+        ];
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        for (const ring of rings) {
+          ctx.strokeStyle = ring.color;
+          ctx.lineWidth = ring.width;
+          ctx.setLineDash([5, 5]);
+          ctx.lineDashOffset = -game.elapsed * 28 * (ring.width / 2);
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, ring.radius, 0, TAU);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        for (let index = 0; index < 7; index += 1) {
+          const angle = game.elapsed * 2.4 + index * (TAU / 7);
+          const distance = player.size * (0.94 + (index % 2) * 0.16);
+          drawPixelHeart(centerX + Math.cos(angle) * distance, centerY + Math.sin(angle) * distance, 8, index % 2 ? "#ff9bc8" : "#e6b9ff");
+        }
+        ctx.restore();
+      }
+
+      function drawPowerAura() {
+        if (game.powerTimer <= 0) {
+          return;
+        }
+
+        const centerX = player.x;
+        const centerY = player.y - player.size * 0.62;
+        const pulse = 1 + Math.sin(game.elapsed * 12) * 0.08;
+        const radius = player.size * 1.05 * pulse;
+        ctx.save();
+        ctx.globalAlpha = 0.35 + Math.sin(game.elapsed * 8) * 0.12;
+        ctx.fillStyle = "#ffe184";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = 0.9;
+        ctx.strokeStyle = "#ff9a75";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([4, 5]);
+        ctx.lineDashOffset = -game.elapsed * 38;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius * 1.15, 0, TAU);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (let index = 0; index < 5; index += 1) {
+          const angle = game.elapsed * 3.4 + index * (TAU / 5);
+          const distance = radius * 1.18;
+          ctx.fillStyle = index % 2 === 0 ? "#fff4a6" : "#ff89b7";
+          ctx.fillRect(
+            Math.round(centerX + Math.cos(angle) * distance - 3),
+            Math.round(centerY + Math.sin(angle) * distance - 3),
+            6,
+            6
+          );
+        }
+        ctx.restore();
+      }
+
+      function drawMagnetAura() {
+        if (game.magnetLevel <= 0) {
+          return;
+        }
+
+        const centerX = player.x;
+        const centerY = player.y - player.size * 0.64;
+        const radius = player.size * (0.74 + game.magnetLevel * 0.05);
+        ctx.save();
+        ctx.globalAlpha = 0.4 + game.magnetLevel * 0.09;
+        ctx.strokeStyle = "#e76d9f";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([3, 6]);
+        ctx.lineDashOffset = game.elapsed * 26;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, TAU);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (let index = 0; index < 3 + game.magnetLevel; index += 1) {
+          const angle = -game.elapsed * (2.2 + game.magnetLevel * 0.25) + index * (TAU / (3 + game.magnetLevel));
+          const distance = radius + 7;
+          ctx.fillStyle = index % 2 === 0 ? "#ff9fc9" : "#d4b5ff";
+          ctx.fillRect(
+            Math.round(centerX + Math.cos(angle) * distance - 2),
+            Math.round(centerY + Math.sin(angle) * distance - 2),
+            4,
+            4
+          );
+        }
+        ctx.restore();
+      }
+
+      function drawCat() {
+        const size = player.size;
+        const x = Math.round(player.x);
+        const baseY = Math.round(player.y + Math.sin(player.bob) * 1.4);
+        const bodyWidth = size * 0.69;
+        const bodyHeight = size * 0.48;
+        const bodyLeft = x - bodyWidth * 0.5;
+        const bodyTop = baseY - bodyHeight;
+        const headWidth = size * 0.9;
+        const headHeight = size * 0.64;
+        const headLeft = x - headWidth * 0.5;
+        const headTop = bodyTop - headHeight * 0.72;
+        const outline = Math.max(3, Math.round(size * 0.06));
+
+        ctx.save();
+        ctx.translate(x, baseY);
+        ctx.rotate(player.tilt);
+        ctx.translate(-x, -baseY);
+
+        ctx.fillStyle = "rgba(114,68,108,0.2)";
+        ctx.fillRect(Math.round(x - size * 0.42), Math.round(baseY - 1), Math.round(size * 0.84), Math.max(4, Math.round(size * 0.1)));
+
+        ctx.fillStyle = "#9c5d93";
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.73), Math.round(bodyTop + bodyHeight * 0.28), Math.round(size * 0.42), Math.round(size * 0.17));
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 1.02), Math.round(bodyTop + bodyHeight * 0.08), Math.round(size * 0.14), Math.round(size * 0.29));
+        ctx.fillStyle = "#ffc5dd";
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.75), Math.round(bodyTop + bodyHeight * 0.32), Math.round(size * 0.35), Math.round(size * 0.09));
+
+        ctx.fillStyle = "#9c5d93";
+        ctx.fillRect(Math.round(bodyLeft - outline), Math.round(bodyTop - outline), Math.round(bodyWidth + outline * 2), Math.round(bodyHeight + outline * 2));
+        ctx.fillStyle = "#fff9fd";
+        ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop), Math.round(bodyWidth), Math.round(bodyHeight));
+        ctx.fillStyle = "#ffc2dc";
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.08), Math.round(bodyTop + bodyHeight * 0.42), Math.round(bodyWidth * 0.84), Math.round(bodyHeight * 0.45));
+        ctx.fillStyle = "#f292bc";
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.12), Math.round(bodyTop + bodyHeight * 0.18), Math.round(bodyWidth * 0.18), Math.round(bodyHeight * 0.14));
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.69), Math.round(bodyTop + bodyHeight * 0.18), Math.round(bodyWidth * 0.18), Math.round(bodyHeight * 0.14));
+
+        ctx.fillStyle = "#9c5d93";
+        ctx.beginPath();
+        ctx.moveTo(headLeft + headWidth * 0.05, headTop + headHeight * 0.34);
+        ctx.lineTo(headLeft + headWidth * 0.18, headTop - size * 0.18);
+        ctx.lineTo(headLeft + headWidth * 0.38, headTop + headHeight * 0.13);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(headLeft + headWidth * 0.62, headTop + headHeight * 0.13);
+        ctx.lineTo(headLeft + headWidth * 0.82, headTop - size * 0.18);
+        ctx.lineTo(headLeft + headWidth * 0.95, headTop + headHeight * 0.34);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(Math.round(headLeft - outline), Math.round(headTop + headHeight * 0.15 - outline), Math.round(headWidth + outline * 2), Math.round(headHeight + outline * 0.9));
+
+        ctx.fillStyle = "#fff9fd";
+        ctx.beginPath();
+        ctx.moveTo(headLeft + headWidth * 0.09, headTop + headHeight * 0.32);
+        ctx.lineTo(headLeft + headWidth * 0.2, headTop - size * 0.09);
+        ctx.lineTo(headLeft + headWidth * 0.37, headTop + headHeight * 0.2);
+        ctx.lineTo(headLeft + headWidth * 0.63, headTop + headHeight * 0.2);
+        ctx.lineTo(headLeft + headWidth * 0.8, headTop - size * 0.09);
+        ctx.lineTo(headLeft + headWidth * 0.91, headTop + headHeight * 0.32);
+        ctx.lineTo(headLeft + headWidth * 0.91, headTop + headHeight * 0.95);
+        ctx.lineTo(headLeft + headWidth * 0.09, headTop + headHeight * 0.95);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#ffb0d1";
+        ctx.beginPath();
+        ctx.moveTo(headLeft + headWidth * 0.17, headTop + headHeight * 0.25);
+        ctx.lineTo(headLeft + headWidth * 0.22, headTop + size * 0.02);
+        ctx.lineTo(headLeft + headWidth * 0.34, headTop + headHeight * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(headLeft + headWidth * 0.66, headTop + headHeight * 0.25);
+        ctx.lineTo(headLeft + headWidth * 0.78, headTop + size * 0.02);
+        ctx.lineTo(headLeft + headWidth * 0.83, headTop + headHeight * 0.25);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#9d6395";
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.22), Math.round(headTop + headHeight * 0.49), Math.max(3, Math.round(size * 0.08)), Math.max(4, Math.round(size * 0.11)));
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.69), Math.round(headTop + headHeight * 0.49), Math.max(3, Math.round(size * 0.08)), Math.max(4, Math.round(size * 0.11)));
+        ctx.fillStyle = "#fffaff";
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.24), Math.round(headTop + headHeight * 0.5), 2, 2);
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.71), Math.round(headTop + headHeight * 0.5), 2, 2);
+        ctx.fillStyle = "#f481ae";
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.46), Math.round(headTop + headHeight * 0.65), Math.max(3, Math.round(size * 0.08)), Math.max(2, Math.round(size * 0.05)));
+        ctx.fillStyle = "#f6a8ca";
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.09), Math.round(headTop + headHeight * 0.64), Math.max(4, Math.round(size * 0.11)), Math.max(3, Math.round(size * 0.06)));
+        ctx.fillRect(Math.round(headLeft + headWidth * 0.79), Math.round(headTop + headHeight * 0.64), Math.max(4, Math.round(size * 0.11)), Math.max(3, Math.round(size * 0.06)));
+
+        ctx.fillStyle = "#fffaff";
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.14), Math.round(baseY - size * 0.14), Math.round(size * 0.16), Math.round(size * 0.14));
+        ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.68), Math.round(baseY - size * 0.14), Math.round(size * 0.16), Math.round(size * 0.14));
+
+        ctx.restore();
+
+        const labelY = headTop - size * 0.48;
+        const labelWidth = Math.max(58, size * 0.88);
+        const labelHeight = Math.max(22, size * 0.27);
+        ctx.save();
+        roundedRectPath(ctx, x - labelWidth * 0.5, labelY, labelWidth, labelHeight, 8);
+        ctx.fillStyle = "#fff6fb";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#d883ad";
+        ctx.stroke();
+        ctx.fillStyle = "#8f4f84";
+        ctx.font = "900 " + Math.max(13, Math.round(size * 0.2)) + "px ui-rounded, Arial Rounded MT Bold, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("İrem", x, labelY + labelHeight * 0.53);
+        ctx.restore();
+      }
+
+      function drawParticles() {
+        for (const particle of particles) {
+          const alpha = clamp(particle.life / particle.maxLife, 0, 1);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.translate(Math.round(particle.x), Math.round(particle.y));
+          ctx.rotate(particle.rotation);
+          if (particle.kind === "heart") {
+            drawPixelHeart(0, 0, particle.size * 1.7, particle.color);
+          } else {
+            ctx.fillStyle = particle.color;
+            ctx.fillRect(-particle.size * 0.5, -particle.size * 0.5, particle.size, particle.size);
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            ctx.fillRect(-particle.size * 0.5, -particle.size * 0.5, Math.max(1, particle.size * 0.35), Math.max(1, particle.size * 0.35));
+          }
+          ctx.restore();
+        }
+      }
+
+      function drawFloatTexts() {
+        for (const floating of floatTexts) {
+          const alpha = clamp(floating.life / floating.maxLife, 0, 1);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.font = "1000 " + Math.round(16 * floating.scale) + "px ui-rounded, Arial Rounded MT Bold, system-ui, sans-serif";
+          ctx.lineWidth = Math.max(2, 3 * floating.scale);
+          ctx.strokeStyle = "rgba(255,255,255,0.92)";
+          ctx.strokeText(floating.text, floating.x, floating.y);
+          ctx.fillStyle = floating.color;
+          ctx.fillText(floating.text, floating.x, floating.y);
+          ctx.restore();
+        }
+      }
+
+      function drawIntroBanner() {
+        if (game.introTimer <= 0) {
+          return;
+        }
+
+        const fade = game.introTimer < 0.38 ? game.introTimer / 0.38 : 1;
+        const width = Math.min(view.width - 34, 332);
+        const height = 68;
+        const x = (view.width - width) * 0.5;
+        const y = Math.max(85, view.height * 0.22);
+        ctx.save();
+        ctx.globalAlpha = fade;
+        ctx.fillStyle = "rgba(137,75,126,0.23)";
+        roundedRectPath(ctx, x + 4, y + 6, width, height, 16);
+        ctx.fill();
+        roundedRectPath(ctx, x, y, width, height, 16);
+        ctx.fillStyle = "#fff2f9";
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#e586b5";
+        ctx.stroke();
+        ctx.fillStyle = "#f49ac1";
+        ctx.fillRect(x + 12, y + 11, 10, 10);
+        ctx.fillStyle = "#cba5ee";
+        ctx.fillRect(x + width - 22, y + height - 21, 10, 10);
+        ctx.fillStyle = "#85507c";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "1000 " + Math.round(clamp(view.width * 0.048, 16, 20)) + "px ui-rounded, Arial Rounded MT Bold, system-ui, sans-serif";
+        ctx.fillText("İrem'in Dünyası Tehlikede!", view.width * 0.5, y + 27);
+        ctx.font = "1000 " + Math.round(clamp(view.width * 0.055, 18, 23)) + "px ui-rounded, Arial Rounded MT Bold, system-ui, sans-serif";
+        ctx.fillStyle = "#e45f99";
+        ctx.fillText("Kaç! ♥", view.width * 0.5, y + 50);
+        ctx.restore();
+      }
+
+      function drawSinemStatus() {
+        if (game.sinemTimer <= 0) {
+          return;
+        }
+
+        const seconds = Math.max(1, Math.ceil(game.sinemTimer));
+        const text = "SİNEM MODU  •  " + seconds + " sn";
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "1000 15px ui-rounded, Arial Rounded MT Bold, system-ui, sans-serif";
+        const width = ctx.measureText(text).width + 30;
+        const x = view.width * 0.5 - width * 0.5;
+        const y = game.introTimer > 0
+          ? Math.min(view.height * 0.43, 350)
+          : Math.max(96, view.height * 0.12);
+        roundedRectPath(ctx, x, y, width, 31, 12);
+        ctx.fillStyle = "rgba(255, 245, 253, 0.92)";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#d89aff";
+        ctx.stroke();
+        ctx.fillStyle = "#9b5fc0";
+        ctx.fillText(text, view.width * 0.5, y + 16);
+        ctx.restore();
+      }
+
+      function draw() {
+        ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+        ctx.clearRect(0, 0, view.width, view.height);
+        drawBackground();
+
+        let shakeX = 0;
+        let shakeY = 0;
+        if (game.shakeTimer > 0 && game.shakeDuration > 0) {
+          const intensity = game.shakePower * (game.shakeTimer / game.shakeDuration);
+          shakeX = random(-intensity, intensity);
+          shakeY = random(-intensity * 0.55, intensity * 0.55);
+        }
+
+        ctx.save();
+        ctx.translate(Math.round(shakeX), Math.round(shakeY));
+        for (const obstacle of obstacles) {
+          drawPixelBlock(obstacle);
+        }
+        for (const pickup of pickups) {
+          drawPickup(pickup);
+        }
+        drawShield();
+        drawPowerAura();
+        drawMagnetAura();
+        drawCat();
+        drawParticles();
+        drawFloatTexts();
+        ctx.restore();
+
+        drawSinemStatus();
+        drawIntroBanner();
+      }
+
+      function loop(timestamp) {
+        if (!lastFrameTime) {
+          lastFrameTime = timestamp;
+        }
+        const delta = Math.min(0.033, Math.max(0, (timestamp - lastFrameTime) / 1000));
+        lastFrameTime = timestamp;
+
+        if (!game.hidden) {
+          update(delta);
+        }
+        draw();
+        window.requestAnimationFrame(loop);
+      }
+
+      function movePlayerFromPointer(event) {
+        const rect = canvas.getBoundingClientRect();
+        const target = event.clientX - rect.left;
+        const sidePadding = player.size * 0.5 + 8;
+        player.targetX = clamp(target, sidePadding, view.width - sidePadding);
+      }
+
+      function onCanvasPointerDown(event) {
+        if (game.phase === "gameover" || game.phase === "upgrade") {
+          return;
+        }
+        event.preventDefault();
+        startAudio();
+        game.pointerId = event.pointerId;
+        if (canvas.setPointerCapture) {
+          try {
+            canvas.setPointerCapture(event.pointerId);
+          } catch (error) {
+            // Safari can reject capture if the pointer was already released.
+          }
+        }
+        movePlayerFromPointer(event);
+      }
+
+      function onCanvasPointerMove(event) {
+        if (game.pointerId !== event.pointerId) {
+          return;
+        }
+        event.preventDefault();
+        movePlayerFromPointer(event);
+      }
+
+      function releaseCanvasPointer(event) {
+        if (game.pointerId !== event.pointerId) {
+          return;
+        }
+        event.preventDefault();
+        if (canvas.hasPointerCapture && canvas.hasPointerCapture(event.pointerId)) {
+          canvas.releasePointerCapture(event.pointerId);
+        }
+        game.pointerId = null;
+      }
+
+      function pressHelp(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        const now = performance.now();
+        if (now - lastHelpPress < 260) {
+          return;
+        }
+        lastHelpPress = now;
+        activateSinem();
+      }
+
+      function pressPower(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        const now = performance.now();
+        if (now - lastPowerPress < 260) {
+          return;
+        }
+        lastPowerPress = now;
+        activatePower();
+      }
+
+      function selectUpgrade(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        const choice = event.currentTarget;
+        if (!choice || !choice.dataset) {
+          return;
+        }
+        applyUpgrade(choice.dataset.upgrade);
+      }
+
+      function pressRestart(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        const now = performance.now();
+        if (now - lastRestartPress < 220) {
+          return;
+        }
+        lastRestartPress = now;
+        startAudio();
+        resetGame();
+      }
+
+      canvas.addEventListener("pointerdown", onCanvasPointerDown, { passive: false });
+      canvas.addEventListener("pointermove", onCanvasPointerMove, { passive: false });
+      canvas.addEventListener("pointerup", releaseCanvasPointer, { passive: false });
+      canvas.addEventListener("pointercancel", releaseCanvasPointer, { passive: false });
+      canvas.addEventListener("contextmenu", (event) => event.preventDefault(), { passive: false });
+
+      helpButton.addEventListener("pointerdown", pressHelp, { passive: false });
+      helpButton.addEventListener("click", pressHelp, { passive: false });
+      powerButton.addEventListener("pointerdown", pressPower, { passive: false });
+      powerButton.addEventListener("click", pressPower, { passive: false });
+      for (const choice of upgradeChoices) {
+        choice.addEventListener("pointerdown", selectUpgrade, { passive: false });
+        choice.addEventListener("click", selectUpgrade, { passive: false });
+      }
+      restartButton.addEventListener("pointerdown", pressRestart, { passive: false });
+      restartButton.addEventListener("click", pressRestart, { passive: false });
+
+      document.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("gesturestart", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("gesturechange", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("gestureend", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("dblclick", (event) => event.preventDefault(), { passive: false });
+
+      document.addEventListener("visibilitychange", () => {
+        game.hidden = document.hidden;
+        lastFrameTime = performance.now();
       });
-      document.querySelector(".overlay").style.opacity = "0";
-      document.querySelector(".overlay").style.transition = "opacity 0.8s ease";
 
-      // UI'yi gizle
-      document.querySelector(".hud").style.opacity = "0";
-      document.querySelector(".center").style.opacity = "0";
-      document.querySelector(".hud").style.transition = "opacity 0.5s";
-      document.querySelector(".center").style.transition = "opacity 0.5s";
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+      window.addEventListener("orientationchange", () => {
+        window.setTimeout(resizeCanvas, 60);
+      }, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", resizeCanvas, { passive: true });
+      }
 
-      setTimeout(() => {
-        const f = document.getElementById("final");
-        f.style.display = "flex";
-        spawnConfetti();
-      }, 900);
-    }, 400);
-  }
-}
-
-// init
-document.getElementById("bgA").style.backgroundImage = `url('${getPhoto(0)}')`;
-renderBullets();
-document.getElementById("text").innerText = messages[0];
-</script>
+      resizeCanvas();
+      resetGame();
+      window.requestAnimationFrame(loop);
+    })();
+  </script>
 </body>
 </html>
