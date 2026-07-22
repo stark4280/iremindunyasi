@@ -811,6 +811,11 @@
 
       let lastFrameTime = 0;
       let audioContext = null;
+      let musicMaster = null;
+      let musicScheduler = null;
+      let musicStarted = false;
+      let musicStep = 0;
+      let musicNextNoteTime = 0;
       let lastRestartPress = -1000;
       let lastHelpPress = -1000;
       let lastPowerPress = -1000;
@@ -989,9 +994,105 @@
           audioContext = new AudioConstructor();
         }
 
-        if (audioContext.state === "suspended") {
-          audioContext.resume().catch(() => {});
+        if (audioContext.state !== "running") {
+          audioContext.resume().then(startBackgroundMusic).catch(() => {});
+        } else {
+          startBackgroundMusic();
         }
+      }
+
+      function scheduleMusicTone(frequency, startTime, duration, volume, type) {
+        if (!audioContext || !musicMaster || frequency <= 0) {
+          return;
+        }
+
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = type || "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+        oscillator.connect(gain);
+        gain.connect(musicMaster);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration + 0.03);
+      }
+
+      function scheduleRomanticMusicStep(step, startTime) {
+        const chordProgression = [
+          [261.63, 329.63, 392.0, 493.88],
+          [220.0, 261.63, 329.63, 392.0],
+          [174.61, 220.0, 261.63, 329.63],
+          [196.0, 246.94, 293.66, 392.0]
+        ];
+        const bassNotes = [130.81, 110.0, 87.31, 98.0];
+        const melodyPattern = [12, 19, 24, 19, 17, 24, 29, 24];
+        const stepDuration = 60 / 76 / 2;
+        const chordIndex = Math.floor(step / 8) % chordProgression.length;
+        const chord = chordProgression[chordIndex];
+        const arpeggioIndex = [0, 2, 1, 3, 2, 1, 2, 3][step % 8];
+
+        scheduleMusicTone(chord[arpeggioIndex], startTime, stepDuration * 0.92, 0.042, "triangle");
+        if (step % 8 === 0) {
+          scheduleMusicTone(bassNotes[chordIndex], startTime, stepDuration * 6.8, 0.025, "sine");
+          scheduleMusicTone(chord[0] * 0.5, startTime, stepDuration * 4.2, 0.014, "triangle");
+        }
+        if (step % 4 === 2) {
+          const melody = chord[0] * Math.pow(2, melodyPattern[(Math.floor(step / 2) + chordIndex) % melodyPattern.length] / 12);
+          scheduleMusicTone(melody, startTime, stepDuration * 1.55, 0.019, "sine");
+        }
+      }
+
+      function scheduleBackgroundMusic() {
+        if (!audioContext || audioContext.state !== "running" || document.hidden) {
+          return;
+        }
+
+        const lookAhead = 0.42;
+        const stepDuration = 60 / 76 / 2;
+        while (musicNextNoteTime < audioContext.currentTime + lookAhead) {
+          scheduleRomanticMusicStep(musicStep, musicNextNoteTime);
+          musicNextNoteTime += stepDuration;
+          musicStep = (musicStep + 1) % 32;
+        }
+      }
+
+      function startBackgroundMusic() {
+        if (!audioContext || audioContext.state !== "running" || document.hidden) {
+          return;
+        }
+
+        if (!musicMaster) {
+          musicMaster = audioContext.createGain();
+          musicMaster.gain.setValueAtTime(0.0001, audioContext.currentTime);
+          musicMaster.connect(audioContext.destination);
+        }
+
+        musicMaster.gain.cancelScheduledValues(audioContext.currentTime);
+        musicMaster.gain.setValueAtTime(Math.max(0.0001, musicMaster.gain.value), audioContext.currentTime);
+        musicMaster.gain.linearRampToValueAtTime(0.58, audioContext.currentTime + 0.35);
+
+        if (!musicStarted) {
+          musicStarted = true;
+          musicNextNoteTime = audioContext.currentTime + 0.08;
+          musicStep = 0;
+          scheduleBackgroundMusic();
+          musicScheduler = window.setInterval(scheduleBackgroundMusic, 120);
+        } else if (musicNextNoteTime < audioContext.currentTime) {
+          musicNextNoteTime = audioContext.currentTime + 0.08;
+          scheduleBackgroundMusic();
+        }
+      }
+
+      function pauseBackgroundMusic() {
+        if (!musicMaster || !audioContext) {
+          return;
+        }
+
+        musicMaster.gain.cancelScheduledValues(audioContext.currentTime);
+        musicMaster.gain.setValueAtTime(Math.max(0.0001, musicMaster.gain.value), audioContext.currentTime);
+        musicMaster.gain.linearRampToValueAtTime(0.0001, audioContext.currentTime + 0.12);
       }
 
       function playTone(options) {
@@ -2535,6 +2636,11 @@
       document.addEventListener("visibilitychange", () => {
         game.hidden = document.hidden;
         lastFrameTime = performance.now();
+        if (document.hidden) {
+          pauseBackgroundMusic();
+        } else if (audioContext && audioContext.state === "running") {
+          startBackgroundMusic();
+        }
       });
 
       window.addEventListener("resize", resizeCanvas, { passive: true });
