@@ -169,10 +169,9 @@
     }
 
     .score-card {
-      display: grid;
-      grid-template-columns: auto auto;
-      align-items: center;
-      gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
       min-width: 116px;
       padding: 9px 13px 8px;
       border: 3px solid rgba(255, 255, 255, 0.96);
@@ -180,6 +179,13 @@
       background: rgba(255, 232, 244, 0.9);
       box-shadow: 0 4px 0 rgba(177, 95, 151, 0.22), 0 8px 18px rgba(151, 76, 130, 0.15);
       line-height: 1;
+    }
+
+    .score-top-row {
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      gap: 8px;
     }
 
     .score-icon {
@@ -570,6 +576,410 @@
         padding: 7px;
       }
     }
+
+    /* ── PAUSE BUTTON ── */
+    #pauseButton {
+      position: fixed;
+      z-index: 4;
+      top: calc(env(safe-area-inset-top, 0px) + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(54px, 13vw);
+      height: min(54px, 13vw);
+      border: 3px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      background: rgba(255, 232, 244, 0.85);
+      box-shadow: 0 3px 0 #ba719d, 0 6px 16px rgba(151,76,130,0.18);
+      color: #774776;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+    }
+    #pauseButton:active { transform: translateX(-50%) scale(0.92); box-shadow: 0 1px 0 #ba719d; }
+    #pauseButton.is-hidden { display: none; }
+
+    /* ── DIFFICULTY BADGE ── */
+    #difficultyBadge {
+      position: fixed;
+      z-index: 4;
+      top: calc(env(safe-area-inset-top, 0px) + 70px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      border: 2px solid rgba(255,255,255,0.82);
+      border-radius: 99px;
+      background: rgba(255,232,244,0.82);
+      color: #a25d91;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── HIGH SCORE CARD ── */
+    .hs-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 2px solid rgba(210,160,200,0.28);
+    }
+    .hs-icon { font-size: 16px; }
+    .hs-caption {
+      display: block;
+      color: #a65b91;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+    #highScoreValue {
+      display: block;
+      color: #6c3f6d;
+      font-size: 16px;
+      font-weight: 1000;
+    }
+
+    /* ── COUNTDOWN OVERLAY ── */
+    #countdownOverlay {
+      position: fixed;
+      z-index: 9;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+    }
+    #countdownOverlay.is-visible { opacity: 1; }
+    #countdownText {
+      font-size: clamp(72px, 20vw, 110px);
+      font-weight: 1000;
+      color: #fff;
+      text-shadow: 0 4px 0 #b74375, 0 0 40px rgba(255,79,156,0.8);
+      font-family: ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+      will-change: transform, opacity;
+    }
+
+    /* ── PAUSE OVERLAY ── */
+    #pauseOverlay {
+      position: fixed;
+      z-index: 8;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 22px) 24px calc(env(safe-area-inset-bottom, 0px) + 22px);
+      background: rgba(89, 42, 86, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease;
+    }
+    #pauseOverlay.is-visible { opacity: 1; pointer-events: auto; }
+
+    .pause-card {
+      width: min(320px, 92vw);
+      padding: 24px 20px 20px;
+      border: 4px solid #fffaff;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fff3fb 0%, #f0d8f5 100%);
+      box-shadow: 0 8px 0 #aa70a3, 0 24px 48px rgba(65, 31, 77, 0.28);
+      text-align: center;
+    }
+    .pause-icon { font-size: 36px; margin-bottom: 6px; }
+    .pause-card h2 { margin: 0 0 16px; color: #734773; font-size: 22px; }
+    .pause-btn-group { display: flex; flex-direction: column; gap: 10px; }
+    .pause-btn {
+      width: 100%;
+      min-height: 50px;
+      border: 3px solid #fffaff;
+      border-radius: 14px;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 1000;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+    }
+    .pause-btn:active { transform: translateY(3px); }
+    .pause-btn.resume-btn {
+      background: linear-gradient(180deg, #ff9ac7 0%, #eb5d9a 100%);
+      box-shadow: 0 5px 0 #b74375;
+      color: #fffaff;
+      text-shadow: 0 2px 0 rgba(130,41,85,0.42);
+    }
+    .pause-btn.resume-btn:active { box-shadow: 0 2px 0 #b74375; }
+    .pause-btn.shop-btn {
+      background: linear-gradient(180deg, #ffe996 0%, #f6ae61 100%);
+      box-shadow: 0 5px 0 #bd7c51;
+      color: #744c59;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.46);
+    }
+    .pause-btn.shop-btn:active { box-shadow: 0 2px 0 #bd7c51; }
+    .pause-btn.diff-btn {
+      background: linear-gradient(180deg, #d8c0ff 0%, #b994e6 100%);
+      box-shadow: 0 5px 0 #846db4;
+      color: #fffaff;
+      text-shadow: 0 2px 0 rgba(80,40,120,0.38);
+    }
+    .pause-btn.diff-btn:active { box-shadow: 0 2px 0 #846db4; }
+
+    /* ── SHOP OVERLAY ── */
+    #shopOverlay {
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 18px) 16px calc(env(safe-area-inset-bottom, 0px) + 18px);
+      background: rgba(89, 42, 86, 0.52);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms ease;
+    }
+    #shopOverlay.is-visible { opacity: 1; pointer-events: auto; }
+
+    .shop-card {
+      width: min(380px, 96vw);
+      max-height: calc(100dvh - 60px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px 18px;
+      border: 4px solid #fffaff;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fff3fb 0%, #eed6f4 100%);
+      box-shadow: 0 8px 0 #aa70a3, 0 24px 48px rgba(65,31,77,0.3);
+    }
+    .shop-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .shop-header h2 { margin: 0; color: #734773; font-size: 21px; }
+    .shop-close {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: linear-gradient(180deg,#ffb0d2,#eb5d9a);
+      box-shadow: 0 3px 0 #b74375;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 1000;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-appearance: none; appearance: none;
+      flex-shrink: 0;
+    }
+    .shop-close:active { transform: scale(0.92); }
+    .shop-coins {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 12px;
+      background: rgba(255,232,244,0.7);
+      font-size: 13px;
+      font-weight: 900;
+      color: #8a4e7c;
+    }
+    .shop-section-title {
+      margin: 10px 0 8px;
+      color: #9a5e91;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .shop-item {
+      padding: 10px 6px 8px;
+      border: 3px solid #fffaff;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffc5e0 0%, #e992c0 100%);
+      box-shadow: 0 4px 0 #b96695;
+      color: #77486f;
+      font: inherit;
+      font-size: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      -webkit-appearance: none; appearance: none;
+      transition: transform 100ms ease, box-shadow 100ms ease;
+      position: relative;
+    }
+    .shop-item:nth-child(3n+2) {
+      background: linear-gradient(180deg, #d8c0ff 0%, #b994e6 100%);
+      box-shadow: 0 4px 0 #846db4;
+    }
+    .shop-item:nth-child(3n+3) {
+      background: linear-gradient(180deg, #c6efd8 0%, #94ceaf 100%);
+      box-shadow: 0 4px 0 #679f82;
+    }
+    .shop-item:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(83,56,85,0.5) !important; }
+    .shop-item.is-owned {
+      opacity: 0.72;
+      background: linear-gradient(180deg,#e3d8cf,#b4a69e) !important;
+      box-shadow: 0 3px 0 #82766f !important;
+    }
+    .shop-item.is-equipped {
+      border-color: #ffd700 !important;
+      box-shadow: 0 4px 0 #c9a000, 0 0 12px rgba(255,215,0,0.55) !important;
+    }
+    .shop-item-icon { display: block; font-size: 26px; margin-bottom: 4px; }
+    .shop-item-name { display: block; line-height: 1.1; margin-bottom: 3px; }
+    .shop-item-price {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.55);
+      font-size: 9px;
+      font-weight: 1000;
+    }
+    .shop-item .equipped-badge {
+      position: absolute;
+      top: -5px; right: -5px;
+      background: #ffd700;
+      color: #7a5000;
+      font-size: 7px;
+      font-weight: 1000;
+      padding: 2px 4px;
+      border-radius: 6px;
+      border: 2px solid #fff;
+    }
+
+    /* ── START SCREEN OVERLAY ── */
+    #startOverlay {
+      position: fixed;
+      z-index: 11;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
+      background: rgba(89, 42, 86, 0.52);
+      opacity: 1;
+      transition: opacity 200ms ease;
+    }
+    #startOverlay.is-hidden { opacity: 0; pointer-events: none; }
+
+    .start-card {
+      width: min(320px, 94vw);
+      padding: 26px 20px 22px;
+      border: 4px solid #fffaff;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #fff3fb 0%, #f0d8f5 100%);
+      box-shadow: 0 8px 0 #aa70a3, 0 24px 48px rgba(65,31,77,0.32);
+      text-align: center;
+    }
+    .start-emoji { font-size: 44px; margin-bottom: 6px; }
+    .start-card h1 { margin: 0 0 4px; color: #734773; font-size: 23px; line-height: 1.1; }
+    .start-card p { margin: 6px 0 16px; color: #9c5c91; font-size: 13px; font-weight: 800; }
+    .start-btn-group { display: flex; flex-direction: column; gap: 10px; }
+    .start-play-btn {
+      width: 100%;
+      min-height: 54px;
+      border: 3px solid #fffaff;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #ff9ac7 0%, #eb5d9a 100%);
+      box-shadow: 0 5px 0 #b74375;
+      color: #fffaff;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 1000;
+      text-shadow: 0 2px 0 rgba(130,41,85,0.42);
+      cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      animation: button-glow 1.55s ease-in-out infinite alternate;
+    }
+    .start-play-btn:active { box-shadow: 0 2px 0 #b74375; transform: translateY(3px); }
+    .start-shop-btn {
+      width: 100%;
+      min-height: 46px;
+      border: 3px solid #fffdf4;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffe996 0%, #f6ae61 100%);
+      box-shadow: 0 5px 0 #bd7c51;
+      color: #744c59;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 1000;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.46);
+      cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+    }
+    .start-shop-btn:active { box-shadow: 0 2px 0 #bd7c51; transform: translateY(3px); }
+    .start-diff-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .start-diff-label { font-size: 12px; font-weight: 900; color: #9a5e91; }
+    .diff-toggle {
+      display: flex;
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 99px;
+      overflow: hidden;
+      background: rgba(255,232,244,0.6);
+    }
+    .diff-opt {
+      padding: 5px 12px;
+      border: none;
+      background: transparent;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 900;
+      color: #a25d91;
+      cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      transition: background 120ms ease, color 120ms ease;
+    }
+    .diff-opt.is-active {
+      background: linear-gradient(180deg,#ff9ac7,#eb5d9a);
+      color: #fff;
+      border-radius: 99px;
+    }
+
+    /* ── SINEM FLICKER ── */
+    @keyframes sinem-flicker {
+      0%   { opacity: 1; }
+      15%  { opacity: 0.3; }
+      30%  { opacity: 0.85; }
+      50%  { opacity: 0.2; }
+      65%  { opacity: 0.9; }
+      80%  { opacity: 0.4; }
+      100% { opacity: 0; }
+    }
+    @keyframes sinem-warning {
+      from { opacity: 0.12; }
+      to   { opacity: 0.55; }
+    }
+    #sinemFlicker {
+      position: fixed;
+      z-index: 6;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(180,100,255,0.55) 0%, rgba(255,100,180,0.35) 60%, transparent 100%);
+      pointer-events: none;
+      opacity: 0;
+    }
+    #sinemFlicker.is-flickering {
+      animation: sinem-flicker 0.7s ease-out forwards;
+    }
   </style>
 </head>
 <body>
@@ -578,11 +988,20 @@
 
     <div id="hud" aria-live="polite" aria-atomic="true">
       <div class="score-card">
-        <span class="score-icon" aria-hidden="true">♥</span>
-        <span>
-          <span class="score-caption">SKOR</span>
-          <span id="scoreValue">0</span>
-        </span>
+        <div class="score-top-row">
+          <span class="score-icon" aria-hidden="true">♥</span>
+          <span>
+            <span class="score-caption">SKOR</span>
+            <span id="scoreValue">0</span>
+          </span>
+        </div>
+        <div class="hs-row">
+          <span class="hs-icon" aria-hidden="true">🏆</span>
+          <span>
+            <span class="hs-caption">REKOR</span>
+            <span id="highScoreValue">0</span>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -618,6 +1037,17 @@
       <span id="powerStatus" aria-hidden="true">Enerji 0%</span>
     </button>
 
+    <button id="pauseButton" type="button" aria-label="Oyunu Durdur" class="is-hidden">⏸</button>
+    <div id="difficultyBadge" aria-live="polite">KOLAY MOD</div>
+
+    <!-- Countdown overlay -->
+    <div id="countdownOverlay" aria-live="assertive" aria-atomic="true">
+      <span id="countdownText">3</span>
+    </div>
+
+    <!-- Sinem flicker effect -->
+    <div id="sinemFlicker"></div>
+
     <section id="upgradeOverlay" role="dialog" aria-modal="true" aria-labelledby="upgradeTitle">
       <div class="upgrade-card">
         <div class="upgrade-kicker">BÖLÜM TAMAMLANDI</div>
@@ -651,6 +1081,61 @@
         <button id="restartButton" type="button">Yeniden Başla</button>
       </div>
     </section>
+
+    <!-- Pause Overlay -->
+    <section id="pauseOverlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+      <div class="pause-card">
+        <div class="pause-icon" aria-hidden="true">⏸</div>
+        <h2 id="pauseTitle">Oyun Durduruldu</h2>
+        <div class="pause-btn-group">
+          <button class="pause-btn resume-btn" id="resumeButton" type="button">▶ Devam Et</button>
+          <button class="pause-btn shop-btn" id="pauseShopButton" type="button">🛍 Mağaza</button>
+          <button class="pause-btn diff-btn" id="pauseDiffButton" type="button">Zorluk: KOLAY</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shop Overlay -->
+    <section id="shopOverlay" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+      <div class="shop-card">
+        <div class="shop-header">
+          <h2 id="shopTitle">🛍 Mağaza</h2>
+          <button class="shop-close" id="shopCloseButton" type="button" aria-label="Mağazayı kapat">✕</button>
+        </div>
+        <div class="shop-coins">
+          <span aria-hidden="true">💰</span>
+          <span>Altın: <strong id="shopCoinsDisplay">0</strong></span>
+        </div>
+        <div class="shop-section-title">KOSTÜMLER</div>
+        <div class="shop-grid" id="costumeGrid">
+          <!-- filled by JS -->
+        </div>
+        <div class="shop-section-title">KANATLAR</div>
+        <div class="shop-grid" id="wingsGrid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Start Screen Overlay -->
+    <section id="startOverlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+      <div class="start-card">
+        <div class="start-emoji" aria-hidden="true">🐾</div>
+        <h1 id="startTitle">İrem'in Dünyası</h1>
+        <p>Düşen bloklardan kaç, kristalleri topla!</p>
+        <div class="start-btn-group">
+          <button class="start-play-btn" id="startButton" type="button">Oyna! ♥</button>
+          <button class="start-shop-btn" id="startShopButton" type="button">🛍 Mağaza</button>
+          <div class="start-diff-row">
+            <span class="start-diff-label">Zorluk:</span>
+            <div class="diff-toggle" role="group" aria-label="Zorluk seçimi">
+              <button class="diff-opt is-active" data-diff="easy" type="button">Kolay</button>
+              <button class="diff-opt" data-diff="normal" type="button">Normal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -660,6 +1145,7 @@
       const canvas = document.getElementById("gameCanvas");
       const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
       const scoreValue = document.getElementById("scoreValue");
+      const highScoreValue = document.getElementById("highScoreValue");
       const zoneName = document.getElementById("zoneName");
       const stageValue = document.getElementById("stageValue");
       const stageProgressText = document.getElementById("stageProgressText");
@@ -681,6 +1167,24 @@
       const restartOverlay = document.getElementById("restartOverlay");
       const restartButton = document.getElementById("restartButton");
       const finalScore = document.getElementById("finalScore");
+      const pauseButton = document.getElementById("pauseButton");
+      const difficultyBadge = document.getElementById("difficultyBadge");
+      const countdownOverlay = document.getElementById("countdownOverlay");
+      const countdownText = document.getElementById("countdownText");
+      const sinemFlicker = document.getElementById("sinemFlicker");
+      const pauseOverlay = document.getElementById("pauseOverlay");
+      const resumeButton = document.getElementById("resumeButton");
+      const pauseShopButton = document.getElementById("pauseShopButton");
+      const pauseDiffButton = document.getElementById("pauseDiffButton");
+      const shopOverlay = document.getElementById("shopOverlay");
+      const shopCloseButton = document.getElementById("shopCloseButton");
+      const shopCoinsDisplay = document.getElementById("shopCoinsDisplay");
+      const costumeGrid = document.getElementById("costumeGrid");
+      const wingsGrid = document.getElementById("wingsGrid");
+      const startOverlay = document.getElementById("startOverlay");
+      const startButton = document.getElementById("startButton");
+      const startShopButton = document.getElementById("startShopButton");
+      const diffOpts = Array.from(document.querySelectorAll(".diff-opt"));
 
       const TAU = Math.PI * 2;
       const MAX_DPR = 2;
@@ -820,6 +1324,60 @@
       let lastHelpPress = -1000;
       let lastPowerPress = -1000;
 
+      // ── NEW STATE ──
+      let difficulty = "easy"; // "easy" | "normal"
+      let highScore = parseInt(localStorage.getItem("irem_highscore") || "0", 10);
+      let coins = parseInt(localStorage.getItem("irem_coins") || "0", 10);
+      let equippedCostume = localStorage.getItem("irem_costume") || "default";
+      let equippedWings   = localStorage.getItem("irem_wings")   || "none";
+      let ownedItems      = JSON.parse(localStorage.getItem("irem_owned") || '["default","none"]');
+      let isPaused        = false;
+      let shopFromPause   = false;
+      let sinemFlickerTimer = 0;
+      let countdownActive   = false;
+      let pendingStart      = false;
+
+      const COSTUMES = [
+        { id: "default",  icon: "🐱", name: "Klasik",    price: 0   },
+        { id: "sweater",  icon: "🧶", name: "Kalpli Kazak", price: 80  },
+        { id: "galaxy",   icon: "�", name: "Galaksi",   price: 150 },
+        { id: "chef",     icon: "👨‍🍳", name: "Aşçı",      price: 200 },
+        { id: "ninja",    icon: "🥷", name: "Ninja",     price: 250 },
+        { id: "princess", icon: "👑", name: "Prenses",   price: 300 },
+        { id: "pirate",   icon: "�‍☠️", name: "Korsan",    price: 350 }
+      ];
+      const WINGS = [
+        { id: "none",     icon: "✖️", name: "Yok",      price: 0 },
+        { id: "butterfly",icon: "🦋", name: "Kelebek", price: 100 },
+        { id: "angel",    icon: "👼", name: "Melek",   price: 180 },
+        { id: "fairy",    icon: "🧚", name: "Peri",    price: 260 }
+      ];
+
+      // Difficulty modifiers
+      function getDiffMultiplier() { return difficulty === "easy" ? 0.72 : 1; }
+      function getDiffSpeedMul()   { return difficulty === "easy" ? 0.80 : 1; }
+      function getDiffObstMul()    { return difficulty === "easy" ? 1.28 : 1; } // interval multiplier (bigger = less frequent)
+
+      function saveHighScore() {
+        if (game.score > highScore) {
+          highScore = Math.floor(game.score);
+          localStorage.setItem("irem_highscore", String(highScore));
+        }
+        highScoreValue.textContent = String(highScore);
+      }
+
+      function saveCoins() {
+        localStorage.setItem("irem_coins", String(coins));
+        if (shopCoinsDisplay) shopCoinsDisplay.textContent = String(coins);
+      }
+
+      function saveOwned() {
+        localStorage.setItem("irem_owned", JSON.stringify(ownedItems));
+      }
+
+      function saveCostume() { localStorage.setItem("irem_costume", equippedCostume); }
+      function saveWings()   { localStorage.setItem("irem_wings",   equippedWings); }
+
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
       }
@@ -877,7 +1435,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.imageSmoothingEnabled = false;
 
-        player.size = clamp(view.width * 0.195, 58, 86);
+        player.size = clamp(view.width * 0.155, 46, 68);
         const sidePadding = player.size * 0.5 + 8;
         player.x = clamp(player.x || view.width * 0.5, sidePadding, view.width - sidePadding);
         player.targetX = clamp(player.targetX || player.x, sidePadding, view.width - sidePadding);
@@ -943,7 +1501,7 @@
 
         game.phase = "intro";
         game.elapsed = 0;
-        game.introTimer = 2;
+        game.introTimer = 0; // countdown handles delay now
         game.score = 0;
         game.scoreFraction = 0;
         game.obstacleTimer = 0.55;
@@ -976,12 +1534,19 @@
 
         restartOverlay.classList.remove("is-visible");
         upgradeOverlay.classList.remove("is-visible");
+        pauseOverlay.classList.remove("is-visible");
+        isPaused = false;
+        pauseButton.classList.remove("is-hidden");
         buildBackground();
         updateScoreDisplay(true);
         updateHelpButton(true);
         updatePowerButton(true);
         updateAdventureDisplay(true);
+        updateDifficultyUI();
         lastFrameTime = performance.now();
+
+        // Start countdown then play
+        startCountdown();
       }
 
       function startAudio() {
@@ -1520,11 +2085,12 @@
       }
 
       function getObstacleInterval() {
-        return Math.max(0.43, 0.86 - game.elapsed * 0.014) + random(-0.075, 0.1);
+        const base = Math.max(0.43, 0.86 - game.elapsed * 0.014) + random(-0.075, 0.1);
+        return base * getDiffObstMul();
       }
 
       function getFallSpeed() {
-        return Math.min(420, 210 + game.elapsed * 5.1);
+        return Math.min(420, 210 + game.elapsed * 5.1) * getDiffSpeedMul();
       }
 
       function collectPickup(index) {
@@ -1578,6 +2144,14 @@
         }
 
         gainEnergy(pickup.type === "crystal" ? 42 : (pickup.type === "milk" ? 28 : 19));
+
+        // altın kazanımı — kristal 18, süt 10, kalp 4 (combo çarpanı uygulanır)
+        const coinGain = pickup.type === "crystal" ? 18 : (pickup.type === "milk" ? 10 : 4);
+        const totalCoins = coinGain * game.combo;
+        coins += totalCoins;
+        saveCoins();
+        addFloatText("+" + totalCoins + " 💰", pickup.x, pickup.y - 28, "#c49a20", 0.78);
+
         updateAdventureDisplay(false);
 
         pickups.splice(index, 1);
@@ -1617,7 +2191,9 @@
         }
 
         startAudio();
-        game.sinemTimer = 8;
+        game.sinemTimer = 11; // was 8 — extended
+        game.sinemHeartTimer = 0;
+        game.sinemFlickering = false;
         triggerShake(0.18, 8);
         burst(player.x, player.y - player.size * 0.68, 31, ["#ff79b8", "#efb5ff", "#8fe4da", "#fff5a6", "#fffaff"], {
           minSpeed: 55,
@@ -1632,6 +2208,16 @@
         addFloatText("Sinem Gücü!", player.x, player.y - player.size * 1.72, "#864db2", 1.22);
         playSinemSound();
         updateHelpButton(true);
+      }
+
+      function triggerSinemFlicker() {
+        sinemFlicker.classList.remove("is-flickering");
+        // force reflow so animation restarts
+        void sinemFlicker.offsetWidth;
+        sinemFlicker.classList.add("is-flickering");
+        sinemFlicker.addEventListener("animationend", () => {
+          sinemFlicker.classList.remove("is-flickering");
+        }, { once: true });
       }
 
       function activatePower() {
@@ -1744,6 +2330,12 @@
         game.sinemTimer = 0;
         game.cooldownTimer = 0;
         game.powerTimer = 0;
+        game.sinemFlickering = false;
+        game.sinemHeartTimer = 0;
+        game.powerFlickering = false;
+        game.powerPawTimer = 0;
+        sinemFlicker.style.animation = "";
+        sinemFlicker.style.background = "";
         triggerShake(0.2, 10);
         burst(player.x, player.y - player.size * 0.62, 26, ["#ff8fbd", "#fffaff", "#d9b5f1", "#f5ccde"], {
           minSpeed: 36,
@@ -1757,8 +2349,10 @@
         });
         playCrashSound();
         finalScore.textContent = String(Math.floor(game.score));
+        saveHighScore();
         upgradeOverlay.classList.remove("is-visible");
         restartOverlay.classList.add("is-visible");
+        pauseButton.classList.add("is-hidden");
         updateHelpButton(true);
         updatePowerButton(true);
       }
@@ -1816,9 +2410,41 @@
 
         if (game.sinemTimer > 0) {
           game.sinemTimer -= delta;
+
+          // sürekli kalp yağmuru — her ~0.10 sn bir küçük burst
+          game.sinemHeartTimer = (game.sinemHeartTimer || 0) - delta;
+          if (game.sinemHeartTimer <= 0) {
+            game.sinemHeartTimer = 0.10;
+            const heartColors = ["#ff6eae", "#ff9fc9", "#efb5ff", "#fffaff", "#ff4499"];
+            const angle = random(0, TAU);
+            const orbitR = player.size * (0.85 + Math.random() * 0.55);
+            burst(
+              player.x + Math.cos(angle) * orbitR * 0.5,
+              (player.y - player.size * 0.68) + Math.sin(angle) * orbitR * 0.4,
+              4,
+              heartColors,
+              { minSpeed: 28, maxSpeed: 90, lift: 55, heartChance: 1,
+                minSize: 5, maxSize: 11, minLife: 0.45, maxLife: 0.85, gravity: 120 }
+            );
+          }
+
+          // son 2 sn: canvas flicker (CSS class ile)
+          if (game.sinemTimer <= 2 && !game.sinemFlickering) {
+            game.sinemFlickering = true;
+            // sürekli titreme için CSS animasyonu döngüsü
+            sinemFlicker.style.animation = "none";
+            void sinemFlicker.offsetWidth;
+            sinemFlicker.style.animation = "sinem-warning 0.18s ease-in-out infinite alternate";
+          }
+
           if (game.sinemTimer <= 0) {
             game.sinemTimer = 0;
+            game.sinemFlickering = false;
+            game.sinemHeartTimer = 0;
+            sinemFlicker.style.animation = "";
+            // kapanış flickerı
             game.cooldownTimer = 30;
+            triggerSinemFlicker();
           }
           updateHelpButton(false);
         } else if (game.cooldownTimer > 0) {
@@ -1828,8 +2454,38 @@
 
         if (game.powerTimer > 0) {
           game.powerTimer -= delta;
+
+          // sürekli pati yağmuru — her ~0.12 sn
+          game.powerPawTimer = (game.powerPawTimer || 0) - delta;
+          if (game.powerPawTimer <= 0) {
+            game.powerPawTimer = 0.12;
+            const pawColors = ["#ffe78d", "#ffc887", "#ff8dbd", "#fffaff", "#d1b5ff"];
+            const angle = random(0, TAU);
+            const orbitR = player.size * (0.9 + Math.random() * 0.7);
+            burst(
+              player.x + Math.cos(angle) * orbitR * 0.55,
+              (player.y - player.size * 0.62) + Math.sin(angle) * orbitR * 0.45,
+              3, pawColors,
+              { minSpeed: 22, maxSpeed: 80, lift: 50, heartChance: 0,
+                minSize: 6, maxSize: 13, minLife: 0.40, maxLife: 0.80, gravity: 100 }
+            );
+          }
+
+          // son 2 sn: sarı-turuncu uyarı flicker
+          if (game.powerTimer <= 2 && !game.powerFlickering) {
+            game.powerFlickering = true;
+            sinemFlicker.style.background = "radial-gradient(ellipse at center, rgba(255,200,60,0.55) 0%, rgba(255,120,60,0.30) 60%, transparent 100%)";
+            sinemFlicker.style.animation = "none";
+            void sinemFlicker.offsetWidth;
+            sinemFlicker.style.animation = "sinem-warning 0.15s ease-in-out infinite alternate";
+          }
+
           if (game.powerTimer <= 0) {
             game.powerTimer = 0;
+            game.powerFlickering = false;
+            game.powerPawTimer = 0;
+            sinemFlicker.style.animation = "";
+            sinemFlicker.style.background = "";
             addFloatText("Pati Modu Bitti", player.x, player.y - player.size * 1.65, "#a76c75", 0.74);
           }
           updatePowerButton(false);
@@ -2183,6 +2839,20 @@
         ctx.restore();
       }
 
+      function drawPixelPaw(x, y, size, color) {
+        // merkez pad
+        const u = Math.max(1, size / 8);
+        ctx.fillStyle = color;
+        ctx.fillRect(Math.round(x - u * 1.5), Math.round(y - u * 0.5), Math.round(u * 3), Math.round(u * 2.5));
+        // 4 küçük parmak pad
+        const toes = [[-1.6, -2], [-0.4, -2.4], [0.8, -2.4], [2.0, -2]];
+        for (const [tx, ty] of toes) {
+          ctx.fillRect(Math.round(x + tx * u), Math.round(y + ty * u), Math.round(u * 1.2), Math.round(u * 1.2));
+        }
+        ctx.fillStyle = "rgba(255,255,255,0.38)";
+        ctx.fillRect(Math.round(x - u * 1.0), Math.round(y - u * 0.1), Math.round(u * 0.7), Math.round(u * 0.8));
+      }
+
       function drawPowerAura() {
         if (game.powerTimer <= 0) {
           return;
@@ -2190,33 +2860,39 @@
 
         const centerX = player.x;
         const centerY = player.y - player.size * 0.62;
-        const pulse = 1 + Math.sin(game.elapsed * 12) * 0.08;
+        const isWarning = game.powerTimer <= 2;
+        const pulse = 1 + Math.sin(game.elapsed * (isWarning ? 18 : 12)) * (isWarning ? 0.13 : 0.08);
         const radius = player.size * 1.05 * pulse;
         ctx.save();
         ctx.globalAlpha = 0.35 + Math.sin(game.elapsed * 8) * 0.12;
-        ctx.fillStyle = "#ffe184";
+        ctx.fillStyle = isWarning ? "#ffb840" : "#ffe184";
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, 0, TAU);
         ctx.fill();
         ctx.globalAlpha = 0.9;
-        ctx.strokeStyle = "#ff9a75";
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = isWarning ? "#ff6a30" : "#ff9a75";
+        ctx.lineWidth = isWarning ? 4 : 3;
         ctx.setLineDash([4, 5]);
-        ctx.lineDashOffset = -game.elapsed * 38;
+        ctx.lineDashOffset = -game.elapsed * (isWarning ? 60 : 38);
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius * 1.15, 0, TAU);
         ctx.stroke();
         ctx.setLineDash([]);
+
+        // dönen pati sembolleri (5 adet)
+        ctx.globalAlpha = 1;
         for (let index = 0; index < 5; index += 1) {
           const angle = game.elapsed * 3.4 + index * (TAU / 5);
-          const distance = radius * 1.18;
-          ctx.fillStyle = index % 2 === 0 ? "#fff4a6" : "#ff89b7";
-          ctx.fillRect(
-            Math.round(centerX + Math.cos(angle) * distance - 3),
-            Math.round(centerY + Math.sin(angle) * distance - 3),
-            6,
-            6
-          );
+          const distance = radius * 1.22;
+          const px = centerX + Math.cos(angle) * distance;
+          const py = centerY + Math.sin(angle) * distance;
+          const pawSize = isWarning ? 14 : 11;
+          const pawColor = index % 2 === 0 ? (isWarning ? "#ffb830" : "#fff4a6") : (isWarning ? "#ff7040" : "#ff89b7");
+          ctx.save();
+          ctx.translate(Math.round(px), Math.round(py));
+          ctx.rotate(angle + Math.PI * 0.5);
+          drawPixelPaw(0, 0, pawSize, pawColor);
+          ctx.restore();
         }
         ctx.restore();
       }
@@ -2253,7 +2929,248 @@
         ctx.restore();
       }
 
+      function drawWings(x, baseY, size, headTop) {
+        const wingsId = equippedWings;
+        if (wingsId === "none") return;
+        ctx.save();
+        const wCx = x;
+        const wCy = baseY - size * 0.55;
+        const pulse = 1 + Math.sin(game.elapsed * 6) * 0.07;
+        if (wingsId === "butterfly") {
+          // left wing
+          ctx.globalAlpha = 0.82;
+          ctx.fillStyle = "#ff9fc9";
+          ctx.beginPath();
+          ctx.ellipse(wCx - size * 0.55 * pulse, wCy - size * 0.05, size * 0.38 * pulse, size * 0.26, -0.4, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = "#d4b5ff";
+          ctx.beginPath();
+          ctx.ellipse(wCx - size * 0.44 * pulse, wCy + size * 0.14, size * 0.24 * pulse, size * 0.16, -0.3, 0, TAU);
+          ctx.fill();
+          // right wing
+          ctx.fillStyle = "#ff9fc9";
+          ctx.beginPath();
+          ctx.ellipse(wCx + size * 0.55 * pulse, wCy - size * 0.05, size * 0.38 * pulse, size * 0.26, 0.4, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = "#d4b5ff";
+          ctx.beginPath();
+          ctx.ellipse(wCx + size * 0.44 * pulse, wCy + size * 0.14, size * 0.24 * pulse, size * 0.16, 0.3, 0, TAU);
+          ctx.fill();
+        } else if (wingsId === "angel") {
+          ctx.globalAlpha = 0.75;
+          ctx.fillStyle = "#fffaee";
+          ctx.beginPath();
+          ctx.moveTo(wCx, wCy);
+          ctx.bezierCurveTo(wCx - size * 0.9 * pulse, wCy - size * 0.5, wCx - size * 1.1 * pulse, wCy + size * 0.1, wCx - size * 0.1, wCy + size * 0.15);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(wCx, wCy);
+          ctx.bezierCurveTo(wCx + size * 0.9 * pulse, wCy - size * 0.5, wCx + size * 1.1 * pulse, wCy + size * 0.1, wCx + size * 0.1, wCy + size * 0.15);
+          ctx.fill();
+          ctx.strokeStyle = "#e8d88a";
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.55;
+          ctx.stroke();
+        } else if (wingsId === "fairy") {
+          ctx.globalAlpha = 0.7;
+          const colors = ["#8fe4d3", "#d4b5ff", "#ff9fc9"];
+          for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = colors[i];
+            const offset = (i - 1) * size * 0.18;
+            ctx.beginPath();
+            ctx.ellipse(wCx - size * (0.52 + i * 0.1) * pulse, wCy - size * 0.08 + offset, size * (0.28 - i * 0.04) * pulse, size * 0.17, -0.35 - i * 0.1, 0, TAU);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(wCx + size * (0.52 + i * 0.1) * pulse, wCy - size * 0.08 + offset, size * (0.28 - i * 0.04) * pulse, size * 0.17, 0.35 + i * 0.1, 0, TAU);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      function getCostumeColors(id) {
+        const map = {
+          default:  { body: "#9c5d93", bodyFill: "#fff9fd", belly: "#ffc2dc", cheek: "#f6a8ca", nose: "#f481ae" },
+          sweater:  { body: "#c0507a", bodyFill: "#fff0f8", belly: "#ffb8e0", cheek: "#ffaad0", nose: "#e84f96" },
+          galaxy:   { body: "#2d2060", bodyFill: "#c8b8ff", belly: "#9070e0", cheek: "#b090ff", nose: "#8060d0" },
+          chef:     { body: "#7a5030", bodyFill: "#fff8e8", belly: "#ffe8b8", cheek: "#ffd090", nose: "#d4903a" },
+          ninja:    { body: "#282830", bodyFill: "#484858", belly: "#383848", cheek: "#505060", nose: "#ff4444" },
+          princess: { body: "#b04090", bodyFill: "#fff0ff", belly: "#ffccff", cheek: "#ff99ee", nose: "#ee44cc" },
+          pirate:   { body: "#8b3a20", bodyFill: "#fff5e8", belly: "#ffd5a0", cheek: "#ffb870", nose: "#cc5522" }
+        };
+        return map[id] || map.default;
+      }
+
+      // Kostüme özel aksesuarlar — body/head koordinatları alır
+      function drawCostumeExtras(id, x, baseY, size, bodyLeft, bodyTop, bodyWidth, bodyHeight, headLeft, headTop, headWidth, headHeight) {
+        if (id === "default") return;
+
+        if (id === "sweater") {
+          // Kalpli pembe kazak — göğüste kalp motifi ve kollar
+          ctx.fillStyle = "#e8507a";
+          ctx.fillRect(Math.round(bodyLeft - 2), Math.round(bodyTop), Math.round(bodyWidth + 4), Math.round(bodyHeight));
+          ctx.fillStyle = "#ff7099";
+          // yaka şeridi
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop), Math.round(bodyWidth), Math.round(size * 0.06));
+          // kollar üstü bant
+          ctx.fillRect(Math.round(bodyLeft - 4), Math.round(bodyTop + bodyHeight * 0.12), Math.round(size * 0.12), Math.round(bodyHeight * 0.55));
+          ctx.fillRect(Math.round(bodyLeft + bodyWidth - 2), Math.round(bodyTop + bodyHeight * 0.12), Math.round(size * 0.12), Math.round(bodyHeight * 0.55));
+          // göğüs kalbi
+          drawPixelHeart(
+            Math.round(x),
+            Math.round(bodyTop + bodyHeight * 0.38),
+            Math.round(size * 0.22),
+            "#fffaff"
+          );
+          // alt bant
+          ctx.fillStyle = "#c03060";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * 0.84), Math.round(bodyWidth), Math.round(bodyHeight * 0.16));
+        }
+
+        else if (id === "galaxy") {
+          // Galaksi kostüm — koyu gövde üstü yıldız serpme + mor şerit
+          ctx.fillStyle = "#1a1240";
+          ctx.fillRect(Math.round(bodyLeft - 1), Math.round(bodyTop), Math.round(bodyWidth + 2), Math.round(bodyHeight));
+          // yıldız noktaları
+          ctx.fillStyle = "#ffffff";
+          const stars = [[0.18,0.2],[0.5,0.12],[0.78,0.3],[0.3,0.55],[0.65,0.62],[0.12,0.72],[0.88,0.18],[0.55,0.45]];
+          for (const [sx, sy] of stars) {
+            const sw = Math.max(2, Math.round(size * 0.03));
+            ctx.fillRect(Math.round(bodyLeft + bodyWidth * sx), Math.round(bodyTop + bodyHeight * sy), sw, sw);
+          }
+          // mor yaka şeridi
+          ctx.fillStyle = "#9060ff";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop), Math.round(bodyWidth), Math.round(size * 0.07));
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * 0.82), Math.round(bodyWidth), Math.round(bodyHeight * 0.18));
+          // kulak çevresinde küçük parlak nokta
+          ctx.fillStyle = "#d0b0ff";
+          ctx.fillRect(Math.round(headLeft + headWidth * 0.1), Math.round(headTop + headHeight * 0.06), Math.round(size * 0.05), Math.round(size * 0.05));
+          ctx.fillRect(Math.round(headLeft + headWidth * 0.84), Math.round(headTop + headHeight * 0.06), Math.round(size * 0.05), Math.round(size * 0.05));
+        }
+
+        else if (id === "chef") {
+          // Aşçı — beyaz önlük + aşçı şapkası
+          ctx.fillStyle = "#f5f0e0";
+          ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.15), Math.round(bodyTop + bodyHeight * 0.08), Math.round(bodyWidth * 0.70), Math.round(bodyHeight * 0.88));
+          // önlük düğmeleri
+          ctx.fillStyle = "#d4b060";
+          for (let i = 0; i < 3; i++) {
+            const bSize = Math.max(2, Math.round(size * 0.04));
+            ctx.fillRect(Math.round(x - bSize * 0.5), Math.round(bodyTop + bodyHeight * (0.22 + i * 0.26)), bSize, bSize);
+          }
+          // şapka — başın üstünde beyaz silindir
+          const hatW = Math.round(headWidth * 0.55);
+          const hatH = Math.round(size * 0.28);
+          const hatX = Math.round(x - hatW * 0.5);
+          const hatY = Math.round(headTop - hatH + size * 0.02);
+          ctx.fillStyle = "#fffdf5";
+          ctx.fillRect(hatX, hatY, hatW, hatH);
+          ctx.fillStyle = "#e8ddb8";
+          ctx.fillRect(hatX - Math.round(size * 0.04), hatY + hatH - Math.round(size * 0.06), hatW + Math.round(size * 0.08), Math.round(size * 0.06));
+          ctx.fillRect(Math.round(x - size * 0.04), hatY + Math.round(size * 0.03), Math.round(size * 0.08), Math.round(hatH * 0.5));
+        }
+
+        else if (id === "ninja") {
+          // Ninja — koyu gövde, yüz maskesi, kemer
+          ctx.fillStyle = "#202028";
+          ctx.fillRect(Math.round(bodyLeft - 1), Math.round(bodyTop), Math.round(bodyWidth + 2), Math.round(bodyHeight));
+          // kırmızı kemer
+          ctx.fillStyle = "#cc2222";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * 0.56), Math.round(bodyWidth), Math.round(bodyHeight * 0.12));
+          // yüz maskesi (ağız/burun kapatan şerit)
+          ctx.fillStyle = "#181820";
+          ctx.fillRect(
+            Math.round(headLeft + headWidth * 0.08),
+            Math.round(headTop + headHeight * 0.54),
+            Math.round(headWidth * 0.84),
+            Math.round(headHeight * 0.32)
+          );
+          // gözler kırmızı parlıyor
+          ctx.fillStyle = "#ff3333";
+          ctx.fillRect(Math.round(headLeft + headWidth * 0.22), Math.round(headTop + headHeight * 0.39), Math.max(3, Math.round(size * 0.08)), Math.max(3, Math.round(size * 0.08)));
+          ctx.fillRect(Math.round(headLeft + headWidth * 0.64), Math.round(headTop + headHeight * 0.39), Math.max(3, Math.round(size * 0.08)), Math.max(3, Math.round(size * 0.08)));
+          // omuz şeritleri
+          ctx.fillStyle = "#444455";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * 0.05), Math.round(bodyWidth), Math.round(bodyHeight * 0.1));
+        }
+
+        else if (id === "princess") {
+          // Prenses — tac + pembe kostüm + yaka fırfırı
+          ctx.fillStyle = "#e060c8";
+          ctx.fillRect(Math.round(bodyLeft - 2), Math.round(bodyTop), Math.round(bodyWidth + 4), Math.round(bodyHeight));
+          // fırfır yaka
+          ctx.fillStyle = "#ffccff";
+          for (let i = 0; i < 5; i++) {
+            const fw = Math.round(bodyWidth * 0.22);
+            const fx = Math.round(bodyLeft + bodyWidth * (i / 5));
+            ctx.fillRect(fx, Math.round(bodyTop - size * 0.05), fw, Math.round(size * 0.1));
+          }
+          // etek kısmı genişliyor
+          ctx.fillStyle = "#cc40aa";
+          ctx.fillRect(Math.round(bodyLeft - 3), Math.round(bodyTop + bodyHeight * 0.6), Math.round(bodyWidth + 6), Math.round(bodyHeight * 0.4));
+          // tac
+          ctx.fillStyle = "#ffd700";
+          const crownW = Math.round(headWidth * 0.52);
+          const crownX = Math.round(x - crownW * 0.5);
+          const crownY = Math.round(headTop - size * 0.25);
+          ctx.fillRect(crownX, crownY + Math.round(size * 0.1), crownW, Math.round(size * 0.14));
+          // tac dişleri
+          const points = [0, 0.25, 0.5, 0.75, 1.0];
+          for (let i = 0; i < 3; i++) {
+            const tx = crownX + Math.round(crownW * (0.15 + i * 0.35));
+            ctx.fillRect(tx, crownY, Math.round(size * 0.07), Math.round(size * 0.14));
+          }
+          ctx.fillStyle = "#ff88dd";
+          // tac üstü küçük taşlar
+          ctx.fillRect(Math.round(x - size * 0.03), crownY + Math.round(size * 0.01), Math.round(size * 0.06), Math.round(size * 0.05));
+        }
+
+        else if (id === "pirate") {
+          // Korsan — çizgili gömlek + göz bandı + şapka
+          // çizgili gömlek
+          ctx.fillStyle = "#e8c888";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop), Math.round(bodyWidth), Math.round(bodyHeight));
+          ctx.fillStyle = "#8b3a20";
+          for (let i = 0; i < 4; i++) {
+            ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * (i / 4)), Math.round(bodyWidth), Math.round(bodyHeight * 0.07));
+          }
+          // kemer + toka
+          ctx.fillStyle = "#3a2010";
+          ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop + bodyHeight * 0.58), Math.round(bodyWidth), Math.round(bodyHeight * 0.1));
+          ctx.fillStyle = "#d4a020";
+          const tokaS = Math.round(size * 0.1);
+          ctx.fillRect(Math.round(x - tokaS * 0.5), Math.round(bodyTop + bodyHeight * 0.57), tokaS, tokaS);
+          // göz bandı
+          ctx.fillStyle = "#181010";
+          ctx.fillRect(
+            Math.round(headLeft + headWidth * 0.44),
+            Math.round(headTop + headHeight * 0.36),
+            Math.round(headWidth * 0.52),
+            Math.round(headHeight * 0.16)
+          );
+          // şapka — siyah üçgen
+          const hatW = Math.round(headWidth * 0.90);
+          const hatH = Math.round(size * 0.22);
+          const hatBX = Math.round(x - hatW * 0.5);
+          const hatBY = Math.round(headTop - size * 0.04);
+          ctx.fillStyle = "#181010";
+          ctx.beginPath();
+          ctx.moveTo(hatBX, hatBY);
+          ctx.lineTo(hatBX + hatW, hatBY);
+          ctx.lineTo(hatBX + hatW * 0.5, hatBY - hatH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#d4a020";
+          // şapka üstü kafatası — küçük pixel
+          ctx.fillRect(Math.round(x - size * 0.08), hatBY - Math.round(hatH * 0.6), Math.round(size * 0.16), Math.round(size * 0.12));
+          ctx.fillStyle = "#181010";
+          ctx.fillRect(Math.round(x - size * 0.04), hatBY - Math.round(hatH * 0.57), Math.round(size * 0.04), Math.round(size * 0.05));
+          ctx.fillRect(Math.round(x + size * 0.01), hatBY - Math.round(hatH * 0.57), Math.round(size * 0.04), Math.round(size * 0.05));
+        }
+      }
+
       function drawCat() {
+        const cc = getCostumeColors(equippedCostume);
         const size = player.size;
         const x = Math.round(player.x);
         const baseY = Math.round(player.y + Math.sin(player.bob) * 1.4);
@@ -2267,6 +3184,9 @@
         const headTop = bodyTop - headHeight * 0.72;
         const outline = Math.max(3, Math.round(size * 0.06));
 
+        // draw wings behind (no tilt)
+        drawWings(x, baseY, size, headTop);
+
         ctx.save();
         ctx.translate(x, baseY);
         ctx.rotate(player.tilt);
@@ -2274,24 +3194,23 @@
 
         ctx.fillStyle = "rgba(114,68,108,0.2)";
         ctx.fillRect(Math.round(x - size * 0.42), Math.round(baseY - 1), Math.round(size * 0.84), Math.max(4, Math.round(size * 0.1)));
-
-        ctx.fillStyle = "#9c5d93";
+        ctx.fillStyle = cc.body;
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.73), Math.round(bodyTop + bodyHeight * 0.28), Math.round(size * 0.42), Math.round(size * 0.17));
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 1.02), Math.round(bodyTop + bodyHeight * 0.08), Math.round(size * 0.14), Math.round(size * 0.29));
-        ctx.fillStyle = "#ffc5dd";
+        ctx.fillStyle = cc.belly;
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.75), Math.round(bodyTop + bodyHeight * 0.32), Math.round(size * 0.35), Math.round(size * 0.09));
 
-        ctx.fillStyle = "#9c5d93";
+        ctx.fillStyle = cc.body;
         ctx.fillRect(Math.round(bodyLeft - outline), Math.round(bodyTop - outline), Math.round(bodyWidth + outline * 2), Math.round(bodyHeight + outline * 2));
-        ctx.fillStyle = "#fff9fd";
+        ctx.fillStyle = cc.bodyFill;
         ctx.fillRect(Math.round(bodyLeft), Math.round(bodyTop), Math.round(bodyWidth), Math.round(bodyHeight));
-        ctx.fillStyle = "#ffc2dc";
+        ctx.fillStyle = cc.belly;
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.08), Math.round(bodyTop + bodyHeight * 0.42), Math.round(bodyWidth * 0.84), Math.round(bodyHeight * 0.45));
-        ctx.fillStyle = "#f292bc";
+        ctx.fillStyle = cc.cheek;
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.12), Math.round(bodyTop + bodyHeight * 0.18), Math.round(bodyWidth * 0.18), Math.round(bodyHeight * 0.14));
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.69), Math.round(bodyTop + bodyHeight * 0.18), Math.round(bodyWidth * 0.18), Math.round(bodyHeight * 0.14));
 
-        ctx.fillStyle = "#9c5d93";
+        ctx.fillStyle = cc.body;
         ctx.beginPath();
         ctx.moveTo(headLeft + headWidth * 0.05, headTop + headHeight * 0.34);
         ctx.lineTo(headLeft + headWidth * 0.18, headTop - size * 0.18);
@@ -2306,7 +3225,7 @@
         ctx.fill();
         ctx.fillRect(Math.round(headLeft - outline), Math.round(headTop + headHeight * 0.15 - outline), Math.round(headWidth + outline * 2), Math.round(headHeight + outline * 0.9));
 
-        ctx.fillStyle = "#fff9fd";
+        ctx.fillStyle = cc.bodyFill;
         ctx.beginPath();
         ctx.moveTo(headLeft + headWidth * 0.09, headTop + headHeight * 0.32);
         ctx.lineTo(headLeft + headWidth * 0.2, headTop - size * 0.09);
@@ -2319,7 +3238,7 @@
         ctx.closePath();
         ctx.fill();
 
-        ctx.fillStyle = "#ffb0d1";
+        ctx.fillStyle = cc.belly;
         ctx.beginPath();
         ctx.moveTo(headLeft + headWidth * 0.17, headTop + headHeight * 0.25);
         ctx.lineTo(headLeft + headWidth * 0.22, headTop + size * 0.02);
@@ -2339,15 +3258,18 @@
         ctx.fillStyle = "#fffaff";
         ctx.fillRect(Math.round(headLeft + headWidth * 0.24), Math.round(headTop + headHeight * 0.5), 2, 2);
         ctx.fillRect(Math.round(headLeft + headWidth * 0.71), Math.round(headTop + headHeight * 0.5), 2, 2);
-        ctx.fillStyle = "#f481ae";
+        ctx.fillStyle = cc.nose;
         ctx.fillRect(Math.round(headLeft + headWidth * 0.46), Math.round(headTop + headHeight * 0.65), Math.max(3, Math.round(size * 0.08)), Math.max(2, Math.round(size * 0.05)));
-        ctx.fillStyle = "#f6a8ca";
+        ctx.fillStyle = cc.cheek;
         ctx.fillRect(Math.round(headLeft + headWidth * 0.09), Math.round(headTop + headHeight * 0.64), Math.max(4, Math.round(size * 0.11)), Math.max(3, Math.round(size * 0.06)));
         ctx.fillRect(Math.round(headLeft + headWidth * 0.79), Math.round(headTop + headHeight * 0.64), Math.max(4, Math.round(size * 0.11)), Math.max(3, Math.round(size * 0.06)));
 
         ctx.fillStyle = "#fffaff";
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.14), Math.round(baseY - size * 0.14), Math.round(size * 0.16), Math.round(size * 0.14));
         ctx.fillRect(Math.round(bodyLeft + bodyWidth * 0.68), Math.round(baseY - size * 0.14), Math.round(size * 0.16), Math.round(size * 0.14));
+
+        // kostüm aksesuarları
+        drawCostumeExtras(equippedCostume, x, baseY, size, bodyLeft, bodyTop, bodyWidth, bodyHeight, headLeft, headTop, headWidth, headHeight);
 
         ctx.restore();
 
@@ -2508,7 +3430,7 @@
         const delta = Math.min(0.033, Math.max(0, (timestamp - lastFrameTime) / 1000));
         lastFrameTime = timestamp;
 
-        if (!game.hidden) {
+        if (!game.hidden && !isPaused && !countdownActive) {
           update(delta);
         }
         draw();
@@ -2523,7 +3445,7 @@
       }
 
       function onCanvasPointerDown(event) {
-        if (game.phase === "gameover" || game.phase === "upgrade") {
+        if (game.phase === "gameover" || game.phase === "upgrade" || isPaused || countdownActive) {
           return;
         }
         event.preventDefault();
@@ -2607,6 +3529,11 @@
         }
         lastRestartPress = now;
         startAudio();
+        // ensure start screen is gone
+        if (startOverlay) {
+          startOverlay.classList.add("is-hidden");
+          startOverlay.style.display = "none";
+        }
         resetGame();
       }
 
@@ -2651,9 +3578,226 @@
         window.visualViewport.addEventListener("resize", resizeCanvas, { passive: true });
       }
 
+      // ── COUNTDOWN ──────────────────────────────────────────
+      function startCountdown() {
+        countdownActive = true;
+        countdownOverlay.classList.add("is-visible");
+        game.phase = "intro";
+        const steps = ["3", "2", "1", "BAŞLA!"];
+        let step = 0;
+
+        function showStep() {
+          if (step >= steps.length) {
+            countdownOverlay.classList.remove("is-visible");
+            countdownActive = false;
+            game.phase = "playing";
+            return;
+          }
+          const label = steps[step];
+          countdownText.textContent = label;
+          countdownText.style.transform = "scale(1.4)";
+          countdownText.style.opacity = "1";
+          countdownText.style.transition = "none";
+          // force reflow
+          void countdownText.offsetWidth;
+          countdownText.style.transition = "transform 0.38s ease-out, opacity 0.38s ease-out";
+          countdownText.style.transform = "scale(1)";
+
+          const isLast = step === steps.length - 1;
+          window.setTimeout(() => {
+            countdownText.style.opacity = "0";
+            window.setTimeout(() => {
+              step += 1;
+              showStep();
+            }, isLast ? 200 : 260);
+          }, isLast ? 480 : 640);
+        }
+
+        window.setTimeout(showStep, 80);
+      }
+
+      // ── DIFFICULTY UI ───────────────────────────────────────
+      function updateDifficultyUI() {
+        const label = difficulty === "easy" ? "KOLAY MOD" : "NORMAL MOD";
+        difficultyBadge.textContent = label;
+        pauseDiffButton.textContent = "Zorluk: " + (difficulty === "easy" ? "KOLAY" : "NORMAL");
+        diffOpts.forEach(opt => {
+          opt.classList.toggle("is-active", opt.dataset.diff === difficulty);
+        });
+      }
+
+      function toggleDifficulty() {
+        difficulty = difficulty === "easy" ? "normal" : "easy";
+        updateDifficultyUI();
+      }
+
+      // ── PAUSE ───────────────────────────────────────────────
+      function pressPause(event) {
+        if (event) { event.preventDefault(); event.stopPropagation(); }
+        if (game.phase === "gameover" || game.phase === "upgrade" || countdownActive) return;
+        isPaused = true;
+        pauseOverlay.classList.add("is-visible");
+        pauseBackgroundMusic();
+      }
+
+      function pressResume(event) {
+        if (event) { event.preventDefault(); event.stopPropagation(); }
+        pauseOverlay.classList.remove("is-visible");
+        isPaused = false;
+        lastFrameTime = performance.now();
+        if (audioContext && audioContext.state === "running") startBackgroundMusic();
+      }
+
+      // ── SHOP ────────────────────────────────────────────────
+      function buildShopGrid() {
+        shopCoinsDisplay.textContent = String(coins);
+
+        costumeGrid.innerHTML = "";
+        COSTUMES.forEach(item => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "shop-item" +
+            (ownedItems.includes(item.id) ? " is-owned" : "") +
+            (equippedCostume === item.id ? " is-equipped" : "");
+          const owned = ownedItems.includes(item.id);
+          const equipped = equippedCostume === item.id;
+          btn.innerHTML = `<span class="shop-item-icon">${item.icon}</span>
+            <span class="shop-item-name">${item.name}</span>
+            <span class="shop-item-price">${equipped ? "✓ Giyili" : (owned ? "Kuşan" : "💰" + item.price)}</span>
+            ${equipped ? '<span class="equipped-badge">AKTİF</span>' : ""}`;
+          btn.addEventListener("pointerdown", (e) => { e.preventDefault(); e.stopPropagation(); buyOrEquipCostume(item); }, { passive: false });
+          btn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); buyOrEquipCostume(item); }, { passive: false });
+          costumeGrid.appendChild(btn);
+        });
+
+        wingsGrid.innerHTML = "";
+        WINGS.forEach(item => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "shop-item" +
+            (ownedItems.includes(item.id) ? " is-owned" : "") +
+            (equippedWings === item.id ? " is-equipped" : "");
+          const owned = ownedItems.includes(item.id);
+          const equipped = equippedWings === item.id;
+          btn.innerHTML = `<span class="shop-item-icon">${item.icon}</span>
+            <span class="shop-item-name">${item.name}</span>
+            <span class="shop-item-price">${equipped ? "✓ Giyili" : (owned ? "Kuşan" : (item.price === 0 ? "Ücretsiz" : "💰" + item.price))}</span>
+            ${equipped ? '<span class="equipped-badge">AKTİF</span>' : ""}`;
+          btn.addEventListener("pointerdown", (e) => { e.preventDefault(); e.stopPropagation(); buyOrEquipWings(item); }, { passive: false });
+          btn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); buyOrEquipWings(item); }, { passive: false });
+          wingsGrid.appendChild(btn);
+        });
+      }
+
+      function buyOrEquipCostume(item) {
+        if (!ownedItems.includes(item.id)) {
+          if (coins < item.price) return; // not enough
+          coins -= item.price;
+          ownedItems.push(item.id);
+          saveCoins();
+          saveOwned();
+        }
+        equippedCostume = item.id;
+        saveCostume();
+        buildShopGrid();
+      }
+
+      function buyOrEquipWings(item) {
+        if (!ownedItems.includes(item.id)) {
+          if (item.price > 0 && coins < item.price) return;
+          ownedItems.push(item.id);
+          if (item.price > 0) { coins -= item.price; saveCoins(); }
+          saveOwned();
+        }
+        equippedWings = item.id;
+        saveWings();
+        buildShopGrid();
+      }
+
+      function openShop(fromPause) {
+        shopFromPause = !!fromPause;
+        buildShopGrid();
+        shopOverlay.classList.add("is-visible");
+      }
+
+      function closeShop() {
+        shopOverlay.classList.remove("is-visible");
+        if (shopFromPause) {
+          // re-show pause menu
+          pauseOverlay.classList.add("is-visible");
+        }
+      }
+
+      // ── NEW EVENT LISTENERS ─────────────────────────────────
+      pauseButton.addEventListener("pointerdown", pressPause, { passive: false });
+      pauseButton.addEventListener("click", pressPause, { passive: false });
+
+      resumeButton.addEventListener("pointerdown", pressResume, { passive: false });
+      resumeButton.addEventListener("click", pressResume, { passive: false });
+
+      pauseShopButton.addEventListener("pointerdown", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        pauseOverlay.classList.remove("is-visible");
+        openShop(true);
+      }, { passive: false });
+      pauseShopButton.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        pauseOverlay.classList.remove("is-visible");
+        openShop(true);
+      }, { passive: false });
+
+      pauseDiffButton.addEventListener("pointerdown", (e) => { e.preventDefault(); e.stopPropagation(); toggleDifficulty(); }, { passive: false });
+      // click kaldırıldı — double-fire sorunu
+
+      shopCloseButton.addEventListener("pointerdown", (e) => { e.preventDefault(); e.stopPropagation(); closeShop(); }, { passive: false });
+      shopCloseButton.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); closeShop(); }, { passive: false });
+
+      startButton.addEventListener("pointerdown", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        startAudio();
+        startOverlay.classList.add("is-hidden");
+        window.setTimeout(() => { startOverlay.style.display = "none"; }, 220);
+        resetGame();
+      }, { passive: false });
+      startButton.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        startAudio();
+        startOverlay.classList.add("is-hidden");
+        window.setTimeout(() => { startOverlay.style.display = "none"; }, 220);
+        resetGame();
+      }, { passive: false });
+
+      startShopButton.addEventListener("pointerdown", (e) => { e.preventDefault(); e.stopPropagation(); openShop(false); }, { passive: false });
+      startShopButton.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openShop(false); }, { passive: false });
+
+      diffOpts.forEach(opt => {
+        opt.addEventListener("pointerdown", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          difficulty = opt.dataset.diff;
+          updateDifficultyUI();
+        }, { passive: false });
+        // click kaldırıldı — touch'ta pointerdown+click çift tetiklenip geri alıyordu
+      });
+
+      // ── INIT ────────────────────────────────────────────────
+      highScoreValue.textContent = String(highScore);
+      updateDifficultyUI();
+
       resizeCanvas();
-      resetGame();
+
+      // Don't auto-start — show start screen first
+      // resetGame sets up state but countdown is blocked while startOverlay is visible
+      game.phase = "intro";
+      game.introTimer = 0;
+      buildBackground();
+      updateScoreDisplay(true);
+      updateHelpButton(true);
+      updatePowerButton(true);
+      updateAdventureDisplay(true);
+      pauseButton.classList.add("is-hidden");
+      lastFrameTime = performance.now();
       window.requestAnimationFrame(loop);
+
     })();
   </script>
 </body>
